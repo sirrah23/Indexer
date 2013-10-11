@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "tokenizer.h"
 
 #define MAX_HEX_CHARS 2
 #define MAX_OCT_CHARS 3
