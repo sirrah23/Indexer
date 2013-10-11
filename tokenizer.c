@@ -10,18 +10,6 @@
 #define MAX_HEX_CHARS 2
 #define MAX_OCT_CHARS 3
 
-/*
- * Tokenizer type.  You need to fill in the type as part of your implementation.
- */
-
-struct TokenizerT_ {
-	char* copied_string;
-	char* delimiters;		
-	char* current_position;
-};
-
-typedef struct TokenizerT_ TokenizerT;
-
 char is_escape_character(char character) {
 	
 	/*
@@ -150,7 +138,7 @@ char* unescape_string(char* string) {
 			escape_character = 0;
 	}
 	
-	*(unescaped_string + unescaped_string_position + 1) = '\0';
+	*(unescaped_string + unescaped_string_position) = '\0';
 	
 	return unescaped_string;
 }
@@ -287,9 +275,9 @@ char *TKGetNextToken(TokenizerT *tk) {
 		tk->current_position++;
 	}	
 
-	token = (char*)malloc(sizeof(char) * (tk->current_position - tk->copied_string + 1));
+	token = (char*)malloc(sizeof(char) * (tk->current_position - token_start + 1));
 	strncpy(token, token_start, tk->current_position - token_start);
-	token[(tk->current_position - tk->copied_string)] = '\0';
+	token[(tk->current_position - token_start)] = '\0';
 	return token;
 }
 
