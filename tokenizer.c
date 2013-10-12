@@ -256,7 +256,7 @@ char *TKGetNextToken(TokenizerT *tk) {
 	char* token_start = NULL;
 
 	while(tk->current_position - tk->copied_string < strlen(tk->copied_string)) {
-		if(!is_delimiter(*tk->current_position, tk->delimiters)) {
+		if(is_delimiter(*tk->current_position, tk->delimiters)) { /*deleted !*/
 		
 			token_start = tk->current_position;
 			break;
@@ -269,7 +269,7 @@ char *TKGetNextToken(TokenizerT *tk) {
 	}
 	
 	while(tk->current_position - tk->copied_string < strlen(tk->copied_string)) {
-		if(is_delimiter(*tk->current_position, tk->delimiters)) {
+		if(!is_delimiter(*tk->current_position, tk->delimiters)) { /*added !*/
 			break;
 		}
 		tk->current_position++;
