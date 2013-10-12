@@ -1,12 +1,4 @@
-#include "sorted-list.h"
-#include "tokenizer.h"
 #include "indexer.h"
-
-struct Indexer{
-	SortedListPtr words;
-}
-
-typedef struct Indexer* IndexerPtr;
 
 IndexerPtr IndexerCreate(CompareFuncT cf, CompareFuncT df){
 	IndexerPtr newindexer = malloc(sizeof(struct Indexer));
