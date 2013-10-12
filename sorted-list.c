@@ -5,6 +5,7 @@ SortedListPtr SLCreate(CompareFuncT cf) {
 	if(list != NULL) {										/*if the list was created successfully*/
 		list->data = NULL;									/*fill in it's default fields*/
 		list->next = NULL; 
+		list->files = NULL;									/*a sorted list for the files for each word*/
 		list->comparator = cf;
 		list->deleted = 1;
 	}
@@ -62,6 +63,7 @@ int SLInsert(SortedListPtr list, void *newObj) {		/*takes in a list and void poi
 	int compval;										/*variable that will hold the compare function's return*/
 	if(list->data == NULL){								/*If the list is empty*/
 		list->data = newObj;							/*Simply insert the object into the list at the beginning and return*/
+		list->count = list->count + 1;					/*increment the count that keeps track of how many hits*/
 		return 1;
 	}
 	SortedListPtr newObject = malloc(sizeof(struct SortedList));	/*Or else we need to insert it somewhere else, in which case we create a node to insert*/
@@ -77,9 +79,11 @@ int SLInsert(SortedListPtr list, void *newObj) {		/*takes in a list and void poi
 			if(prev == NULL){										/*And it is at the head of the list*/
 				newObject->data = list->data;						/*Copy the information from the head to the object*/
 				newObject->next = list->next;
+				newObject->count = list->count;
 				newObject->deleted = list->deleted;
 				list->data = newObj;								/*Point the head to the new new object*/
 				list->next = newObject;
+				list->count = 1;
 				list->deleted = 1;
 				return 1;
 			}
@@ -88,8 +92,7 @@ int SLInsert(SortedListPtr list, void *newObj) {		/*takes in a list and void poi
 			return 1;
 		}
 		else if(compval == 0){										/*If we found something equivalent to what we want to insert*/
-			newObject->next = temp->next;							/*Simply insert it before what we found*/
-			temp->next = newObject;									
+			temp->count = temp->count + 1;									
 			return 1;
 		}
 		else{														/*Else we haven't found the right spot so keep looking*/		

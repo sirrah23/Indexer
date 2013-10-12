@@ -12,8 +12,10 @@
 struct SortedList
 {
 	void *data;
+	struct SortedList* files;
 	struct SortedList* next;
 	int (*comparator)(void *, void *);
+	int count;
 	short int deleted;
 };
 
