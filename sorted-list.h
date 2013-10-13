@@ -12,14 +12,22 @@
 struct SortedList
 {
 	void *data;
-	struct SortedList* files;
+	struct SortedList2* files;
 	struct SortedList* next;
 	int (*comparator)(void *, void *);
-	int count;
-	short int deleted;
 };
 
 typedef struct SortedList* SortedListPtr;
+
+struct SortedList2
+{   
+    void *data;
+    struct SortedList2* next;
+    int (*comparator)(void *, void *);
+    int count;
+};
+
+typedef struct SortedList2* SortedList2Ptr;
 
 /*
  * Iterator type for user to "walk" through the list item by item, from
@@ -31,6 +39,13 @@ struct SortedListIterator
 	SortedListPtr previous;
 };
 typedef struct SortedListIterator* SortedListIteratorPtr;
+
+struct SortedList2Iterator
+{
+        SortedList2Ptr current;
+        SortedList2Ptr previous;
+};
+typedef struct SortedList2Iterator* SortedList2IteratorPtr;
 
 
 /*
@@ -62,6 +77,8 @@ typedef int (*CompareFuncT)(void *, void *);
 
 SortedListPtr SLCreate(CompareFuncT cf);
 
+SortedList2Ptr SLCreate2(CompareFuncT cf);
+
 /*
  * SLDestroy destroys a list, freeing all dynamically allocated memory.
  *
@@ -69,6 +86,7 @@ SortedListPtr SLCreate(CompareFuncT cf);
  */
 void SLDestroy(SortedListPtr list);
 
+void SLDestroy2(SortedList2Ptr list);
 
 /*
  * SLInsert inserts a given object into a sorted list, maintaining sorted
@@ -83,17 +101,7 @@ void SLDestroy(SortedListPtr list);
 
 int SLInsert(SortedListPtr list, void *newObj);
 
-/*
- * SLRemove removes a given object from a sorted list.  Sorted ordering
- * should be maintained.
- *
- * If the function succeeds, it returns 1.  Else, it returns 0.
- *
- * You need to fill in this function as part of your implementation.
- */
-
-int SLRemove(SortedListPtr list, void *newObj);
-
+int SLInsert(SortedList2Ptr list, void *newObj);
 
 /*
  * SLCreateIterator creates an iterator object that will allow the caller
@@ -107,6 +115,7 @@ int SLRemove(SortedListPtr list, void *newObj);
 
 SortedListIteratorPtr SLCreateIterator(SortedListPtr list);
 
+SortedList2IteratorPtr SLCreateIterator2(SortedList2Ptr list);
 
 /*
  * SLDestroyIterator destroys an iterator object that was created using
@@ -136,5 +145,7 @@ void SLDestroyIterator(SortedListIteratorPtr iter);
  */
 
 void *SLNextItem(SortedListIteratorPtr iter);
+
+void *SLNextItem2(SortedList2IteratorPtr iter);
 
 #endif
