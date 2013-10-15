@@ -133,28 +133,30 @@ void SLDestroyIterator(SortedListIteratorPtr iter) {			/*frees the iterator poin
 	free(iter);
 }
 
-void *SLNextItem(SortedListIteratorPtr iter) {					/*Takes in an iterator pointer*/
-	if(iter->current == NULL)									/*If the pointer is at the end of the list return null*/
-		return NULL;											/*return null*/
-	if(iter->previous != NULL) {								/*If the next item function has been run before*/
-		while(iter->previous->next != iter->current) {			/*If we are at the correct spot via the current being immediately after the previous*/
-			iter->previous = iter->previous->next;				/*move the previous pointer over*/
-			if(iter->previous->deleted == 1) {					/*and if it is a deleted node*/
-				iter->current = iter->previous;					/*move the current pointer back one*/
-				break;
-			}
-		}
-	}
-	do {
-		if(iter->current->deleted == 1)							/*if what we are pointing to has been deleted*/
-			break;
-		iter->current = iter->current->next;					/*move the current pointer over*/
-	} while(iter->current != NULL);								/*while you haven't reached the end of the list*/
-	void *object = NULL;										/*Create the data to be returned*/
-	if(iter->current != NULL) {									/*if we haven't reached the end of the list*/
-		object = iter->current->data;							/*obtain the data that is being pointed to*/
-		iter->previous = iter->current;							/*move the pointers*/
-		iter->current = iter->current->next;
-	}
-	return object;												/*return the data*/
-}
+
+//void *SLNextItem(SortedListIteratorPtr iter) {					/*Takes in an iterator pointer*/
+//	if(iter->current == NULL)									/*If the pointer is at the end of the list return null*/
+//		return NULL;											/*return null*/
+//	if(iter->previous != NULL) {								/*If the next item function has been run before*/
+//		while(iter->previous->next != iter->current) {			/*If we are at the correct spot via the current being immediately after the previous*/
+//			iter->previous = iter->previous->next;				/*move the previous pointer over*/
+//			if(iter->previous->deleted == 1) {					/*and if it is a deleted node*/
+//				iter->current = iter->previous;					/*move the current pointer back one*/
+//				break;
+//			}
+//		}
+//	}
+//	do {
+//		if(iter->current->deleted == 1)							/*if what we are pointing to has been deleted*/
+//			break;
+//		iter->current = iter->current->next;					/*move the current pointer over*/
+//	} while(iter->current != NULL);								/*while you haven't reached the end of the list*/
+//	void *object = NULL;										/*Create the data to be returned*/
+//	if(iter->current != NULL) {									/*if we haven't reached the end of the list*/
+//		object = iter->current->data;							/*obtain the data that is being pointed to*/
+//		iter->previous = iter->current;							/*move the pointers*/
+//		iter->current = iter->current->next;
+//	}
+//	return object;												/*return the data*/
+//}
+

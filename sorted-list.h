@@ -99,9 +99,12 @@ void SLDestroy2(SortedList2Ptr list);
  * You need to fill in this function as part of your implementation.
  */
 
-int SLInsert(SortedListPtr list, void *newObj);
 
-int SLInsert(SortedList2Ptr list, void *newObj);
+int SLInsert2(SortedList2Ptr list, void *newObj);
+
+
+int SLInsert(SortedListPtr list, void *newObj, void *newObj2);
+
 
 /*
  * SLCreateIterator creates an iterator object that will allow the caller

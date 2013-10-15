@@ -4,13 +4,13 @@
 
 struct Indexer{
 	SortedListPtr words;
-}
+};
 
 typedef struct Indexer* IndexerPtr;
 
-IndexerPtr IndexerCreate(CompareFunct cf, CompareFunct df);
+IndexerPtr IndexerCreate(CompareFuncT cf, CompareFuncT df);
 
-void IndexerDestroy(IndexPtr destroyit);
+void IndexerDestroy(IndexerPtr destroyit);
 
 int IndexerInsert(char *word, char* filename, IndexerPtr insertee);
 

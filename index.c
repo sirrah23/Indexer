@@ -1,13 +1,14 @@
 #include "index.h"
+#include "sorted-list.h" 
 
 IndexerPtr IndexerCreate(CompareFuncT cf, CompareFuncT df){
 	IndexerPtr newindexer = malloc(sizeof(struct Indexer));
 	newindexer->words = SLCreate(cf);
-	newindexer->files = SLCreate2(df);
+	newindexer->words->files = SLCreate2(df);
 	return newindexer;
-}
+};
 
-void IndexerDestroy(IndexPtr destroyit){
+void IndexerDestroy(IndexerPtr destroyit){
 	SLDestroy(destroyit->words);
 	free(destroyit);
 }
