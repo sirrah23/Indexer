@@ -49,6 +49,11 @@ int readFile(char *filename, IndexerPtr insertree) {
     return 1;
 }
 
+int readDirectory(char *dirName, IndexerPtr insertree) {
+    /*open directory and use readFile above to read files.
+     * if another directory recure through it*/
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 3) {
         printf("Usage: ./index <inverted-index filename> <directory or file name>\n");
@@ -58,12 +63,16 @@ int main(int argc, char *argv[]) {
     IndexerPtr indexer = IndexerCreate(&compareStrings, &compareInts);
 
     char *objName = argv[2];
+    int successval;
     struct stat obj;
     stat(objName, &obj);
     if(S_ISREG(obj.st_mode))
-        printf("File is regular.\n");
+        successval = readFile(objName, indexer);
     else if (S_ISDIR(obj.st_mode))
-        printf("File is a directory.\n");
+        successval = readDirectory(objName, indexer);
+
+    if(!successval)
+        printf("Failed reading a file.\n");
 
     return 0;
 }
