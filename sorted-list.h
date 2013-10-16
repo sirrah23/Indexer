@@ -88,6 +88,8 @@ void SLDestroy(SortedListPtr list);
 
 void SLDestroy2(SortedList2Ptr list);
 
+int SLInsert2(SortedList2Ptr list, void *newObj);
+
 /*
  * SLInsert inserts a given object into a sorted list, maintaining sorted
  * order of all objects in the list.  If the new object is equal to a subset
@@ -99,12 +101,7 @@ void SLDestroy2(SortedList2Ptr list);
  * You need to fill in this function as part of your implementation.
  */
 
-
-int SLInsert2(SortedList2Ptr list, void *newObj);
-
-
 int SLInsert(SortedListPtr list, void *newObj, void *newObj2);
-
 
 /*
  * SLCreateIterator creates an iterator object that will allow the caller
