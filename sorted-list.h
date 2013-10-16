@@ -23,7 +23,7 @@ struct SortedList2
 {   
     void *data;
     struct SortedList2* next;
-    int (*comparator)(void *, void *);
+    int (*comparator)(int, int);
     int count;
 };
 

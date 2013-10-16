@@ -136,8 +136,33 @@ int SLInsert2(SortedList2Ptr list, void *newObj, CompareFuncT comp) {
             if(prev != NULL) {
                 SortedList2Ptr prev2 = NULL;
                 SortedList2Ptr temp2 = list;
+                int compval2;
+                while(temp2 != temp) {
+                    compval2 = temp->comparator(temp2->count, temp->count);
+                    if(compval2 < 0) {
+                        prev->next = temp->next;
+                        if(prev2 == NULL) {
+                            void *x = temp2->data;
+                            int y = temp2->count;
+                            temp2->data = temp->data;
+                            temp2->count = temp->count;
+                            temp->data = x; temp->count = y;
+                            temp->next = temp2->next;
+                            temp2->next = temp;
+                        } else {
+                            temp->next = prev2->next;
+                            prev2->next = temp;
+                        }
+                        break;
+                    }
+                    prev2 = temp2;
+                    temp2 = temp2->next;
+                }
             }
+            return 1;
         }
+        prev = temp;
+        temp = temp->next;
     }
 }
 

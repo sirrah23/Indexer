@@ -9,12 +9,9 @@
 
 static char alphaNum[63] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\0";
 
-int compareInts(void *p1, void *p2)
+int compareInts(int p1, int p2)
 {
-    int i1 = *(int*)p1;
-    int i2 = *(int*)p2;
-
-    return i1 - i2;
+    return p1 - p2;
 }
 
 int compareStrings(void *p1, void *p2)
