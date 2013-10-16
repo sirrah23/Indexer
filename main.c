@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <fts.h>
 #include "tokenizer.h"
 #include "index.h"
 
@@ -49,9 +50,40 @@ int readFile(char *filename, IndexerPtr insertree) {
     return 1;
 }
 
-int readDirectory(char *dirName, IndexerPtr insertree) {
-    /*open directory and use readFile above to read files.
-     * if another directory recure through it*/
+static int readDirectory(char * const argv[]){
+	FTS *ftsp;					/*A pointer to an FTS object that holds a bunch of FTSENT*/
+	FTSENT  *p, *pcheck;		/*FTSENT objects that hold all the information for directory and files*/
+	int options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;	/*Options necessary for FTS to run*/
+
+	if((ftsp = fts_open(argv, fts_options, NULL)) == NULL){		/*Takes an array of characters to and opens each directory and file in the array*/
+		printf("Couldn't open this thing.");
+		return -1;
+	}
+
+	pcheck = fts_children(ftsp,0);								
+
+	if(pcheck == NULL){   /*Checks to see if there is any file to traverse*/
+		return 0;
+	}
+	
+	while((p=fts_read(ftsp)) != NULL){ /*visits each directory and file*/
+		switch(p->fts_info){
+			case FTS_D:		/*If directory*/
+				printf("directory %s\n", p->fts_path);
+				break; 
+			case FTS_F:		/*If file, here is where we want to add the tokenizer and fill in insertee*/
+				printf("file %s\n", p->fts_path);
+				break;
+			case default:
+				break;
+
+
+		}
+	}
+	fts_close(ftsp);
+	return 1;
+
+
 }
 
 int main(int argc, char *argv[]) {
@@ -63,16 +95,8 @@ int main(int argc, char *argv[]) {
     IndexerPtr indexer = IndexerCreate(&compareStrings, &compareInts);
 
     char *objName = argv[2];
-    int successval;
-    struct stat obj;
-    stat(objName, &obj);
-    if(S_ISREG(obj.st_mode))
-        successval = readFile(objName, indexer);
-    else if (S_ISDIR(obj.st_mode))
-        successval = readDirectory(objName, indexer);
-
-    if(!successval)
-        printf("Failed reading a file.\n");
-
+	char **argfts;
+	argfts[0] = *objName;
+	int x = readDirectory(argfts);	
     return 0;
 }
