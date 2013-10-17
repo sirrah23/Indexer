@@ -1,3 +1,6 @@
+#include <string.h>
+#include <ctype.h>
+
 /*
  * tokenizer.h
  */
@@ -46,7 +49,7 @@ TokenizerT *TKCreate(char *separators, char *ts);
 /*
  * destroys tokenizer struct and deallocates all memory
  */
-void TKDestroy(Tokenizer *tk);
+void TKDestroy(TokenizerT *tk);
 
 /*
  * determines if a particular character is a member of the set of delimiters

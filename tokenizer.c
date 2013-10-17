@@ -1,10 +1,7 @@
 /*
  * tokenizer.c
  */
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "tokenizer.h"
 
 #define MAX_HEX_CHARS 2
@@ -279,37 +276,4 @@ char *TKGetNextToken(TokenizerT *tk) {
 	strncpy(token, token_start, tk->current_position - token_start);
 	token[(tk->current_position - token_start)] = '\0';
 	return token;
-}
-
-/*
- * main will have two string arguments (in argv[1] and argv[2]).
- * The first string contains the separator characters.
- * The second string contains the tokens.
- * Print out the tokens in the second string in left-to-right order.
- * Each token should be printed on a separate line.
- */
-
-int main(int argc, char **argv) {
-	
-	if(argc != 3){
-		printf("Error: invalid number of arguments\n");
-		return -1;
-	}
-	
-	TokenizerT* tokenizer = TKCreate(argv[1], argv[2]);
-	
-	if(tokenizer == NULL) {
-		printf("Error: unable to create tokenizer\n");
-	}
-	
-	char* token = NULL;
-	
-	while((token = TKGetNextToken(tokenizer)) != NULL) {
-		printf("%s\n", token);
-		free(token);
-	}
-	
-	TKDestroy(tokenizer);
-
-	return 0;
 }

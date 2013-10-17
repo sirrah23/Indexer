@@ -1,6 +1,4 @@
 #include "sorted-list.h"
-#include <stdlib.h>
-
 
 struct Indexer{
 	SortedListPtr words;
@@ -8,10 +6,8 @@ struct Indexer{
 
 typedef struct Indexer* IndexerPtr;
 
-IndexerPtr IndexerCreate(CompareFuncT cf, CompareFuncT df);
+IndexerPtr IndexerCreate(CompareFuncT cf, int(*df)(int,int));
 
 void IndexerDestroy(IndexerPtr destroyit);
 
 int IndexerInsert(char *word, char* filename, IndexerPtr insertee);
-
-	

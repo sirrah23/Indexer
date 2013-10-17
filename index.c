@@ -1,7 +1,6 @@
-#include "index.h"
-#include "sorted-list.h" 
+#include "index.h" 
 
-IndexerPtr IndexerCreate(CompareFuncT cf, CompareFuncT df){
+IndexerPtr IndexerCreate(CompareFuncT cf, int(*df)(int,int)){
 	IndexerPtr newindexer = malloc(sizeof(struct Indexer));
 	newindexer->words = SLCreate(cf);
 	newindexer->words->files = SLCreate2(df);
@@ -15,7 +14,9 @@ void IndexerDestroy(IndexerPtr destroyit){
 
 int IndexerInsert(char* word, char* filename, IndexerPtr insertee)
 {
-	int x = SLInsert(insertee->words,word,filename); /*this could be wrong*/
+    void *wordPtr = word;
+    void *filenamePtr = filename;
+	int x = SLInsert(insertee->words,wordPtr,filenamePtr); /*this could be wrong*/
 	if(x){
 		return 1;
 	}

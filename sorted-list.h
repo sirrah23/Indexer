@@ -6,6 +6,16 @@
 
 #include <stdlib.h>
 
+struct SortedList2
+{   
+    void *data;
+    struct SortedList2* next;
+    int (*comparator)(int, int);
+    int count;
+};
+
+typedef struct SortedList2* SortedList2Ptr;
+
 /*
  * Sorted list type.  You need to fill in the type as part of your implementation.
  */
@@ -18,34 +28,6 @@ struct SortedList
 };
 
 typedef struct SortedList* SortedListPtr;
-
-struct SortedList2
-{   
-    void *data;
-    struct SortedList2* next;
-    int (*comparator)(int, int);
-    int count;
-};
-
-typedef struct SortedList2* SortedList2Ptr;
-
-/*
- * Iterator type for user to "walk" through the list item by item, from
- * beginning to end.  You need to fill in the type as part of your implementation.
- */
-struct SortedListIterator
-{
-	SortedListPtr current;
-	SortedListPtr previous;
-};
-typedef struct SortedListIterator* SortedListIteratorPtr;
-
-struct SortedList2Iterator
-{
-        SortedList2Ptr current;
-        SortedList2Ptr previous;
-};
-typedef struct SortedList2Iterator* SortedList2IteratorPtr;
 
 
 /*
@@ -77,7 +59,7 @@ typedef int (*CompareFuncT)(void *, void *);
 
 SortedListPtr SLCreate(CompareFuncT cf);
 
-SortedList2Ptr SLCreate2(CompareFuncT cf);
+SortedList2Ptr SLCreate2(int(*cf)(int,int));
 
 /*
  * SLDestroy destroys a list, freeing all dynamically allocated memory.
@@ -88,7 +70,7 @@ void SLDestroy(SortedListPtr list);
 
 void SLDestroy2(SortedList2Ptr list);
 
-int SLInsert2(SortedList2Ptr list, void *newObj);
+int SLInsert2(SortedList2Ptr list, void *newObj, CompareFuncT comp);
 
 /*
  * SLInsert inserts a given object into a sorted list, maintaining sorted
@@ -102,50 +84,5 @@ int SLInsert2(SortedList2Ptr list, void *newObj);
  */
 
 int SLInsert(SortedListPtr list, void *newObj, void *newObj2);
-
-/*
- * SLCreateIterator creates an iterator object that will allow the caller
- * to "walk" through the list from beginning to the end using SLNextItem.
- *
- * If the function succeeds, it returns a non-NULL SortedListIterT object.
- * Else, it returns NULL.
- *
- * You need to fill in this function as part of your implementation.
- */
-
-SortedListIteratorPtr SLCreateIterator(SortedListPtr list);
-
-SortedList2IteratorPtr SLCreateIterator2(SortedList2Ptr list);
-
-/*
- * SLDestroyIterator destroys an iterator object that was created using
- * SLCreateIterator().  Note that this function should destroy the
- * iterator but should NOT affectt the original list used to create
- * the iterator in any way.
- *
- * You need to fill in this function as part of your implementation.
- */
-
-void SLDestroyIterator(SortedListIteratorPtr iter);
-
-
-/*
- * SLNextItem returns the next object in the list encapsulated by the
- * given iterator.  It should return a NULL when the end of the list
- * has been reached.
- *
- * One complication you MUST consider/address is what happens if a
- * sorted list encapsulated within an iterator is modified while that
- * iterator is active.  For example, what if an iterator is "pointing"
- * to some object in the list as the next one to be returned but that
- * object is removed from the list using SLRemove() before SLNextItem()
- * is called.
- *
- * You need to fill in this function as part of your implementation.
- */
-
-void *SLNextItem(SortedListIteratorPtr iter);
-
-void *SLNextItem2(SortedList2IteratorPtr iter);
 
 #endif

@@ -11,7 +11,7 @@ SortedListPtr SLCreate(CompareFuncT cf) {
 	return list;											/*return the list*/
 }
 
-SortedList2Ptr SLCreate2(CompareFuncT cf) {
+SortedList2Ptr SLCreate2(int(*cf)(int,int)) {
     SortedList2Ptr list = malloc(sizeof(struct SortedList2));
     if(list != NULL) {
         list->data = NULL;
@@ -56,13 +56,69 @@ void SLDestroy2(SortedList2Ptr list) {
     }
 }
 
+int SLInsert2(SortedList2Ptr list, void *newObj, CompareFuncT comp) {
+    SortedList2Ptr prev = NULL;                          /*point a previous pointer to null*/
+    SortedList2Ptr temp = list;                          /*point a temp pointer to the beginning of the list*/
+    int compval;                                        /*variable that will hold the compare function's return*/
+    if(list->data == NULL){                             /*If the list is empty*/
+        list->data = newObj;                            /*Simply insert the object into the list at the beginning and return*/
+        list->count++;
+        return 1;
+    }
+    while(temp != NULL) {
+        compval = comp(temp->data, newObj);
+        if(compval == 0) { /*loops through the list until a match is found*/
+            temp->count++; /*increment word occurrence in that match*/
+            if(prev != NULL) { /*sort the list if the match found is not the first one in the list*/
+                SortedList2Ptr prev2 = NULL;
+                SortedList2Ptr temp2 = list; /*point to the beginning of the list*/
+                int compval2;
+                while(temp2 != temp) { /*loops through the list until the correct position is found*/
+                    compval2 = temp->comparator(temp2->count, temp->count);
+                    if(compval2 < 0) { /*position found*/
+                        prev->next = temp->next; /*disconnect temp from the list*/
+                        if(prev2 == NULL) { /*if temp2 is in front of the list*/
+                            void *x = temp2->data; /*swaps data between the node (temp2) in front of the list and temp*/
+                            int y = temp2->count;
+                            temp2->data = temp->data;
+                            temp2->count = temp->count;
+                            temp->data = x; temp->count = y;
+                            temp->next = temp2->next; /*puts temp after temp2*/
+                            temp2->next = temp;
+                        } else {
+                            temp->next = prev2->next; /*puts temp between prev2 and prev2->next*/
+                            prev2->next = temp;
+                        }
+                        break; /*done sorting*/
+                    }
+                    prev2 = temp2; /*iterate to the next node*/
+                    temp2 = temp2->next;
+                }
+            }
+            return 1; /*return if done with the match found*/
+        }
+        prev = temp; /*continue on until a match is found or not found*/
+        temp = temp->next;
+    }
+    /*if no match is found create a new node*/
+    SortedList2Ptr newObject = malloc(sizeof(struct SortedList2));
+    if(newObject == NULL)
+        return 0;
+    newObject->data = newObj;
+    newObject->count = 1;
+    newObject->next = NULL;
+    newObject->comparator = list->comparator;
+    prev->next = newObject; /*put it at the end of the list*/
+    return 1;
+}
+
 int SLInsert(SortedListPtr list, void *newObj, void *newObj2) {		/*takes in a list and void pointer*/
 	SortedListPtr prev = NULL;							/*point a previous pointer to null*/
 	SortedListPtr temp = list;							/*point a temp pointer to the beginning of the list*/
 	int compval;										/*variable that will hold the compare function's return*/
 	if(list->data == NULL){								/*If the list is empty*/
 		list->data = newObj;                            /*Simply insert the object into the list at the beginning and return*/
-        if(SLInsert2(list->files, newObj2))
+        if(SLInsert2(list->files, newObj2, list->comparator))
 		    return 1;
         else
             return 0;
@@ -86,7 +142,7 @@ int SLInsert(SortedListPtr list, void *newObj, void *newObj2) {		/*takes in a li
                 list->files = SLCreate2(newObject->files->comparator);
                 if(list->files == NULL)
                     return 0;
-                if(SLInsert2(list->files, newObj2))
+                if(SLInsert2(list->files, newObj2, list->comparator))
 				    return 1;
                 else
                     return 0;
@@ -96,13 +152,13 @@ int SLInsert(SortedListPtr list, void *newObj, void *newObj2) {		/*takes in a li
             newObject->files = SLCreate2(prev->files->comparator);
             if(newObject->files == NULL)
                 return 0;
-            if(SLInsert2(newObject->files, newObj2))
+            if(SLInsert2(newObject->files, newObj2, newObject->comparator))
 			    return 1;
             else
                 return 0;
 		}
 		else if(compval == 0){										/*If we found something equivalent to what we want to insert*/
-			if(SLInsert2(temp->files, newObj2))									
+			if(SLInsert2(temp->files, newObj2, temp->comparator))
 			    return 1;
             else
                 return 0;
@@ -116,76 +172,8 @@ int SLInsert(SortedListPtr list, void *newObj, void *newObj2) {		/*takes in a li
     newObject->files = SLCreate2(prev->files->comparator);
     if(newObject->files == NULL)
         return 0;
-    if(SLInsert2(newObject->files, newObj2))
+    if(SLInsert2(newObject->files, newObj2, newObject->comparator))
 	    return 1;
     else
         return 0;
-}
-
-int SLInsert2(SortedList2Ptr list, void *newObj, CompareFuncT comp) {
-    SortedList2Ptr prev = NULL;                          /*point a previous pointer to null*/
-    SortedList2Ptr temp = list;                          /*point a temp pointer to the beginning of the list*/
-    int compval;                                        /*variable that will hold the compare function's return*/
-    if(list->data == NULL){                             /*If the list is empty*/
-        list->data = newObj;                            /*Simply insert the object into the list at the beginning and return*/
-        list->count++;
-        return 1;
-    }
-    while(temp != NULL) {
-        compval = comp(temp->data, newObj);
-        if(compval == 0) {
-            temp->count++;
-            if(prev != NULL) {
-                SortedList2Ptr prev2 = NULL;
-                SortedList2Ptr temp2 = list;
-                int compval2;
-                while(temp2 != temp) {
-                    compval2 = temp->comparator(temp2->count, temp->count);
-                    if(compval2 < 0) {
-                        prev->next = temp->next;
-                        if(prev2 == NULL) {
-                            void *x = temp2->data;
-                            int y = temp2->count;
-                            temp2->data = temp->data;
-                            temp2->count = temp->count;
-                            temp->data = x; temp->count = y;
-                            temp->next = temp2->next;
-                            temp2->next = temp;
-                        } else {
-                            temp->next = prev2->next;
-                            prev2->next = temp;
-                        }
-                        break;
-                    }
-                    prev2 = temp2;
-                    temp2 = temp2->next;
-                }
-            }
-            return 1;
-        }
-        prev = temp;
-        temp = temp->next;
-    }
-    SortedList2Ptr newObject = malloc(sizeof(struct SortedList2));
-    if(newObject == NULL)
-        return 0;
-    newObject->data = newObj;
-    newObject->count = 1;
-    newObject->next = NULL;
-    newObject->comparator = list->comparator;
-    prev->next = newObject;
-    return 1;
-}
-
-SortedListIteratorPtr SLCreateIterator(SortedListPtr list) {		/*Creates an iterator struct and fills in the fields*/
-	SortedListIteratorPtr iterator = malloc(sizeof(*iterator));
-	if(iterator != NULL) {
-		iterator->current = list;
-		iterator->previous = NULL;
-	}
-	return iterator;
-}
-
-void SLDestroyIterator(SortedListIteratorPtr iter) {			/*frees the iterator pointer*/
-	free(iter);
 }
