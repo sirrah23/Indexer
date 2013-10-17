@@ -74,21 +74,28 @@ int readDirectory(char *dirName, IndexerPtr insertree/*, char *pathName*/) {
         char objName[300];
         struct stat obj;
         sprintf(objName, "%s/%s", dirName, dirP->d_name); /*stores path name of file or another directory into objName ex: sample/test.txt or sample/directory*/
-        if(stat(objName, &obj) != 0)
+        if(stat(objName, &obj) != 0) {
+            closedir(dir);
             return 0;
+        }
         /*int x;*/
         if(S_ISREG(obj.st_mode)) { /*if regular file*/
             /*if(pathName == NULL) {
                 x = strlen(dirP->d_name);
                 char file[x] = strncpy(file, dirP->d_name, x+1);
             }*/
-            if(!readFile(objName, insertree)) /*read file*/
+            if(!readFile(objName, insertree)) { /*read file*/
+                closedir(dir);
                 return 0;
+            }
         } else if(S_ISDIR(obj.st_mode)) { /*if directory*/
-            if(!readDirectory(objName, insertree)) /*read directory*/
+            if(!readDirectory(objName, insertree)) { /*read directory*/
+                closedir(dir);
                 return 0; /*failed*/
+            }
         }
     }
+    closedir(dir);
     return 1; /*succeded*/
 }
 

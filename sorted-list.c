@@ -28,11 +28,13 @@ void SLDestroy(SortedListPtr list) {
 	while(temp != NULL){		/*While you haven't reached the end of the list*/
 		temp2 = temp->next;		/*Move the other pointer to the next node*/
 		if(temp2 == NULL) {     /*if next node doesn't exist that means you're at the end*/
+            free(temp->data);
             SLDestroy2(temp->files);
 			free(temp);			/*Free that node*/
 			break;
 		}
 		else{					/*else the list still has more stuff*/
+            free(temp->data);
             SLDestroy2(temp->files);
 			free(temp);			/*Free the node itself*/
 			temp = temp2;		/*Move onto the next node in the list*/
@@ -46,10 +48,12 @@ void SLDestroy2(SortedList2Ptr list) {
     while(temp != NULL){        /*While you haven't reached the end of the list*/
         temp2 = temp->next;     /*Move the other pointer to the next node*/
         if(temp2 == NULL){      /*if next node doesn't exist that means you're at the end*/
+            /*free(temp->data);*/
             free(temp);         /*Free that node*/
             break;
         }
         else{                   /*else the list still has more stuff*/
+            /*free(temp->data);*/
             free(temp);         /*Free the node itself*/
             temp = temp2;       /*Move onto the next node in the list*/
         }
