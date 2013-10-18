@@ -54,7 +54,7 @@ int readFile(char *pathname, IndexerPtr insertree, char *filename) {
        }
        TKDestroy(tokenizer);
     }
-    fclose(file)
+    fclose(file);
     return 1; /*succeded*/
 }
 
@@ -81,8 +81,8 @@ int readDirectory(char *dirName, IndexerPtr insertree, char *pathName) {
             closedir(dir);
             return 0;
         }
+        int x = strlen(dirP->d_name);
         if(S_ISREG(obj.st_mode)) { /*if regular file*/
-            int x = strlen(dirP->d_name);
             char *file;
             if(pathName == NULL) {
                 file = malloc(sizeof(char)*(x+1));
@@ -98,15 +98,17 @@ int readDirectory(char *dirName, IndexerPtr insertree, char *pathName) {
             }
         } else if(S_ISDIR(obj.st_mode)) { /*if directory*/
             if(pathName == NULL) {
-                char path[300];
+                char path[x+2];
                 sprintf(path, "%s/", dirP->d_name);
                 if(!readDirectory(objName, insertree, path)) { /*read directory*/
                     closedir(dir);
                     return 0; /*failed*/
                 }
             } else {
-                sprintf(pathName, "%s%s/", pathName, dirP->d_name);
-                if(!readDirectory(objName, insertree, pathName)) { /*read directory*/
+                int y = strlen(pathName);
+                char path[y+x+2];
+                sprintf(path, "%s%s/", pathName, dirP->d_name);
+                if(!readDirectory(objName, insertree, path)) { /*read directory*/
                     closedir(dir);
                     return 0; /*failed*/
                 }
@@ -178,9 +180,11 @@ int main(int argc, char *argv[]) {
 
     IndexerPtr indexer = IndexerCreate(&compareStrings, &compareInts);
 
-    if(S_ISREG(obj.st_mode)) /*if regular file*/
-        successval = readFile(objName, indexer, objName);
-    else if(S_ISDIR(obj.st_mode)) /*if directory*/
+    if(S_ISREG(obj.st_mode)) { /*if regular file*/
+        char *obj = malloc(sizeof(char)*(strlen(objName)+1));
+        obj = strcpy(obj, objName);
+        successval = readFile(objName, indexer, obj);
+    } else if(S_ISDIR(obj.st_mode)) /*if directory*/
         successval = readDirectory(objName, indexer, NULL);
 
     if(!successval) {
