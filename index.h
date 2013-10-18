@@ -1,6 +1,8 @@
 #include "sorted-list.h"
 
-struct Indexer{
+/*A struct that holds a SortedList*/
+
+struct Indexer{ 
 	SortedListPtr words;
 };
 

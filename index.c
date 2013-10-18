@@ -1,5 +1,9 @@
 #include "index.h" 
 
+/*Creates an IndexerStruct by mallocing space for the 
+ * SortedList that is inside of it 
+*/
+
 IndexerPtr IndexerCreate(CompareFuncT cf, int(*df)(int,int)){
 	IndexerPtr newindexer = malloc(sizeof(struct Indexer));
 	newindexer->words = SLCreate(cf);
@@ -7,10 +11,15 @@ IndexerPtr IndexerCreate(CompareFuncT cf, int(*df)(int,int)){
 	return newindexer;
 };
 
+/*Calls the SLDestroy function for the SortedList to free malloced space*/
+
 void IndexerDestroy(IndexerPtr destroyit){
 	SLDestroy(destroyit->words);
 	free(destroyit);
 }
+
+/*Inserts into the Indexer struct by inserting into the SortedList using SLInsert*/
+
 
 int IndexerInsert(char* word, char* filename, IndexerPtr insertee)
 {
