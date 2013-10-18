@@ -32,9 +32,9 @@ void toLowerCase(char *string) {
  * Reads a file line by line, tokenizes it, and stores the files and words into
  * a sorted list.
  */
-int readFile(char *filename, IndexerPtr insertree) {
+int readFile(char *pathname, IndexerPtr insertree, char *filename) {
     char buffer[BUFSIZ];
-    FILE *file = fopen(filename, "r");
+    FILE *file = fopen(pathname, "r");
     if(!file)
         return 0; /*failed*/
 
@@ -61,7 +61,7 @@ int readFile(char *filename, IndexerPtr insertree) {
  * Problem: objName has 300 characters, it's doing some weird stuff when
  * written in a file.
  */
-int readDirectory(char *dirName, IndexerPtr insertree/*, char *pathName*/) {
+int readDirectory(char *dirName, IndexerPtr insertree, char *pathName) {
     struct dirent *dirP;
     DIR *dir;
 
@@ -78,20 +78,35 @@ int readDirectory(char *dirName, IndexerPtr insertree/*, char *pathName*/) {
             closedir(dir);
             return 0;
         }
-        /*int x;*/
         if(S_ISREG(obj.st_mode)) { /*if regular file*/
-            /*if(pathName == NULL) {
-                x = strlen(dirP->d_name);
-                char file[x] = strncpy(file, dirP->d_name, x+1);
-            }*/
-            if(!readFile(objName, insertree)) { /*read file*/
+            int x = strlen(dirP->d_name);
+            char *file;
+            if(pathName == NULL) {
+                file = malloc(sizeof(char)*(x+1));
+                file = strncpy(file, dirP->d_name, x+1);
+            } else {
+                int y = strlen(pathName);
+                file = malloc(sizeof(char)*(y+x+1));
+                sprintf(file, "%s%s", pathName, dirP->d_name);
+            }
+            if(!readFile(objName, insertree, file)) { /*read file*/
                 closedir(dir);
                 return 0;
             }
         } else if(S_ISDIR(obj.st_mode)) { /*if directory*/
-            if(!readDirectory(objName, insertree)) { /*read directory*/
-                closedir(dir);
-                return 0; /*failed*/
+            if(pathName == NULL) {
+                char path[300];
+                sprintf(path, "%s/", dirP->d_name);
+                if(!readDirectory(objName, insertree, path)) { /*read directory*/
+                    closedir(dir);
+                    return 0; /*failed*/
+                }
+            } else {
+                sprintf(pathName, "%s%s/", pathName, dirP->d_name);
+                if(!readDirectory(objName, insertree, pathName)) { /*read directory*/
+                    closedir(dir);
+                    return 0; /*failed*/
+                }
             }
         }
     }
@@ -161,9 +176,9 @@ int main(int argc, char *argv[]) {
     IndexerPtr indexer = IndexerCreate(&compareStrings, &compareInts);
 
     if(S_ISREG(obj.st_mode)) /*if regular file*/
-        successval = readFile(objName, indexer);
+        successval = readFile(objName, indexer, objName);
     else if(S_ISDIR(obj.st_mode)) /*if directory*/
-        successval = readDirectory(objName, indexer);
+        successval = readDirectory(objName, indexer, NULL);
 
     if(!successval) {
         IndexerDestroy(indexer);
