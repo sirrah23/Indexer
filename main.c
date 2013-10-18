@@ -1,9 +1,6 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <dirent.h>
-#include <fcntl.h>
 #include "tokenizer.h"
 #include "index.h"
 
@@ -86,7 +83,7 @@ int readDirectory(char *dirName, IndexerPtr insertree, char *pathName) {
             char *file;
             if(pathName == NULL) {
                 file = malloc(sizeof(char)*(x+1));
-                file = strncpy(file, dirP->d_name, x+1);
+                file = strcpy(file, dirP->d_name);
             } else {
                 int y = strlen(pathName);
                 file = malloc(sizeof(char)*(y+x+1));
@@ -146,25 +143,27 @@ int saveFile(FILE *file, IndexerPtr index) {
  */
 int main(int argc, char *argv[]) {
     if(argc != 3) {
-        printf("Usage: ./index <inverted-index filename> <directory or file name>\n");
+        printf("Usage: ./index <inverted-index filename> <directory or file name>\nAborting\n");
         return 1;
     }
 
     FILE *save = fopen(argv[1], "r");
     if(save != NULL) { /*if file already exists*/
-        char input;
+        char input[10];
         while(1) {
             printf("File %s already exists, Overwrite [Y/N]? ", argv[1]);
-            scanf("%c", &input);
-            if(input == 'Y' || input == 'y')
+            scanf("%s", input);
+            toLowerCase(input);
+            if(strcmp(input, "yes") == 0 || strcmp(input, "y") == 0)
                 break; /*break if user wants to overwrite*/
-            else if(input == 'N' || input == 'n') {
+            else if(strcmp(input, "no") == 0 || strcmp(input, "n") == 0) {
                 fclose(save);
-                printf("Aborting...\n"); /*abort if user doesn't want to overwrite*/
+                printf("Aborting\n"); /*abort if user doesn't want to overwrite*/
                 return 1;
             }
             printf("Invalid input.\n"); /*if input is invalid*/
         }
+        fclose(save);
     }
 
     save = fopen(argv[1], "w"); /*opens file for writing, creates a new file if file doesn't exist*/
@@ -174,7 +173,7 @@ int main(int argc, char *argv[]) {
     struct stat obj;
     if(stat(objName, &obj) != 0) {
         fclose(save);
-        printf("Failed to read a file.\n");
+        printf("Failed to read a file.\nAborting\n");
         return 1;
     }
 
@@ -190,7 +189,7 @@ int main(int argc, char *argv[]) {
     if(!successval) {
         IndexerDestroy(indexer);
         fclose(save);
-        printf("Failed to read a file.\n");
+        printf("Failed to read a file.\nAborting\n");
         return 1;
     }
 
@@ -199,7 +198,7 @@ int main(int argc, char *argv[]) {
     else {
         IndexerDestroy(indexer);
         fclose(save);
-        printf("Writing to file %s failed.\n", argv[1]);
+        printf("Writing to file %s failed.\nAborting\n", argv[1]);
         return 1;
     }
 
