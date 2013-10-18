@@ -162,10 +162,15 @@ int SLInsert(SortedListPtr list, void *newObj, void *newObj2) {		/*takes in a li
                 return 0;
 		}
 		else if(compval == 0){										/*If we found something equivalent to what we want to insert*/
-			if(SLInsert2(temp->files, newObj2, temp->comparator))
+			if(SLInsert2(temp->files, newObj2, temp->comparator)) {
+                free(newObject->data);
+                free(newObject);
 			    return 1;
-            else
+            } else {
+                free(newObject->data);
+                free(newObject);
                 return 0;
+            }
 		}
 		else{														/*Else we haven't found the right spot so keep looking*/		
 			prev = temp;

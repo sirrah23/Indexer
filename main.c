@@ -40,18 +40,21 @@ int readFile(char *pathname, IndexerPtr insertree, char *filename) {
 
     while(fgets(buffer, sizeof(buffer), file)) { /*gets a line, puts it in buffer*/
        TokenizerT *tokenizer = TKCreate(alphaNum, buffer);
-       if(tokenizer == NULL)
+       if(tokenizer == NULL) {
+           fclose(file);
            return 0; /*failed*/
+       }
        char *token;
        while((token = TKGetNextToken(tokenizer)) != NULL) { /*get a token from buffer*/
             toLowerCase(token);
-            if(!IndexerInsert(token, filename, insertree)) /*insert the token into the sorted list*/
+            if(!IndexerInsert(token, filename, insertree)) { /*insert the token into the sorted list*/
+                fclose(file);
                 return 0; /*failed*/
+            }
        }
        TKDestroy(tokenizer);
     }
-    if(fclose(file) != 0)
-        return 0; /*failed*/
+    fclose(file)
     return 1; /*succeded*/
 }
 

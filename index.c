@@ -16,7 +16,7 @@ int IndexerInsert(char* word, char* filename, IndexerPtr insertee)
 {
     void *wordPtr = word;
     void *filenamePtr = filename;
-	int x = SLInsert(insertee->words,wordPtr,filenamePtr); /*this could be wrong*/
+	int x = SLInsert(insertee->words,wordPtr,filenamePtr);
 	if(x){
 		return 1;
 	}
