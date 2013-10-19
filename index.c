@@ -1,3 +1,4 @@
+#include <string.h>
 #include "index.h" 
 
 /*Creates an IndexerStruct by mallocing space for the 
@@ -24,7 +25,9 @@ void IndexerDestroy(IndexerPtr destroyit){
 int IndexerInsert(char* word, char* filename, IndexerPtr insertee)
 {
     void *wordPtr = word;
-    void *filenamePtr = filename;
+    char *file = malloc(sizeof(char)*(strlen(filename)+1));
+    file = strcpy(file, filename);
+    void *filenamePtr = file;
 	int x = SLInsert(insertee->words,wordPtr,filenamePtr);
 	if(x){
 		return 1;

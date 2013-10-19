@@ -72,6 +72,7 @@ int SLInsert2(SortedList2Ptr list, void *newObj, CompareFuncT comp) {
     while(temp != NULL) {
         compval = comp(temp->data, newObj);
         if(compval == 0) { /*loops through the list until a match is found*/
+            free(newObj);
             temp->count++; /*increment word occurrence in that match*/
             if(prev != NULL) { /*sort the list if the match found is not the first one in the list*/
                 SortedList2Ptr prev2 = NULL;

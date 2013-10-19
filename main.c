@@ -78,22 +78,18 @@ int readDirectory(char *dirName, IndexerPtr insertree, char *pathName) {
             closedir(dir);
             return 0;
         }
-        int x = strlen(dirP->d_name);
         if(S_ISREG(obj.st_mode)) { /*if regular file*/
-            char *file;
-            if(pathName == NULL) {
-                file = malloc(sizeof(char)*(x+1));
-                file = strcpy(file, dirP->d_name);
-            } else {
-                int y = strlen(pathName);
-                file = malloc(sizeof(char)*(y+x+1));
+            char file[300];
+            if(pathName == NULL)
+                sprintf(file, "%s", dirP->d_name);
+            else
                 sprintf(file, "%s%s", pathName, dirP->d_name);
-            }
             if(!readFile(objName, insertree, file)) { /*read file*/
                 closedir(dir);
                 return 0;
             }
         } else if(S_ISDIR(obj.st_mode)) { /*if directory*/
+            int x = strlen(dirP->d_name);
             if(pathName == NULL) {
                 char path[x+2];
                 sprintf(path, "%s/", dirP->d_name);
