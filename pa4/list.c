@@ -31,3 +31,17 @@ int WLInsert(WordListPtr list, char *data) {
 int FLInsert(FileListPtr list, char *data) {
     /*fill in code here*/
 }
+
+/*
+ * Frees allocated memory for the word linked list.
+ */
+void WLDestroy(WordListPtr list) {
+ /*fill in code here*/
+}
+
+/*
+ * Frees allocated memory for the file linked list.
+ */
+void FLDestroy(FileListPtr list) {
+    /*fill in code here*/
+}

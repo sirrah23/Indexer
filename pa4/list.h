@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 /*
  * A node in a file linked list that holds a file's name,
  * the number of occurrences of a word in that file, and a pointer
@@ -45,3 +47,13 @@ int WLInsert(WordListPtr list, char *data);
  * Returns 1 if it succeeds, 0 if not.
  */
 int FLInsert(FileListPtr list, char *data);
+
+/*
+ * Frees allocated memory for the word linked list.
+ */
+void WLDestroy(WordListPtr list);
+
+/*
+ * Frees allocated memory for the file linked list.
+ */
+void FLDestroy(FileListPtr list);

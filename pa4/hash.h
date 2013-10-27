@@ -1,3 +1,4 @@
+#include <string.h>
 #include "list.h"
 
 /*
@@ -14,3 +15,14 @@ typedef struct HashTable* HashTablePtr;
  * Returns NULL if function fails.
  */
 HashTablePtr makeHashTable(unsigned int size);
+
+/*
+ * Frees memory allocated by the hash table.
+ */
+void DestroyTable(HashTablePtr table);
+
+/*
+ * Inserts a word into the hash table. Uses the Fowler-Noll-Vo (FNV) hash function.
+ * Returns a pointer to a node in a linked list of words.
+ */
+WordListPtr TableInsert(HashTablePtr table, char *word);
