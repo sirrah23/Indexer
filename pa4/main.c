@@ -7,7 +7,14 @@
  * Gets the number of words in the inverted-index file.
  */
 unsigned int getIndexSize(FILE *file) {
-    /*fill in code here*/
+    char buffer[300];
+    unsigned int size = 0;
+    char *token;
+
+    while(fgets(buffer, sizeof(buffer), file)) {
+        token = strtok(buffer, " ");
+
+    }
 }
 
 /*

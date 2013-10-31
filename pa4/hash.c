@@ -7,7 +7,19 @@
  * Returns NULL if function fails.
  */
 HashTablePtr makeHashTable(unsigned int size) {
-    /*Fill in code here*/
+    HashTablePtr table = malloc(sizeof(struct HashTable));
+    
+    if(table != NULL) { /*if malloc succeeds*/
+        table->table_size = size;
+        table->hash_table = malloc(sizeof(WordListPtr) * size); /*make space for WordList pointers, size = number of pointers*/
+        if(table->hash_table != NULL) { /*if malloc succeeds*/
+            int i;
+            for(i = 0; i < size; i++) /*point all WordList pointers to NULL*/
+                table->hash_table[i] = NULL;
+        }
+    }
+
+    return table;
 }
 
 /*
