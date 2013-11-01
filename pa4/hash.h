@@ -19,10 +19,15 @@ HashTablePtr makeHashTable(unsigned int size);
 /*
  * Frees memory allocated by the hash table.
  */
-void DestroyTable(HashTablePtr table);
+void destroyTable(HashTablePtr table);
+
+/*
+ * Finds where the word is located in the table and returns the WordList pointer.
+ */
+WordListPtr tableGet(HashTablePtr table, char *word);
 
 /*
  * Inserts a word into the hash table. Uses the Fowler-Noll-Vo (FNV) hash function.
  * Returns a pointer to a node in a linked list of words.
  */
-WordListPtr TableInsert(HashTablePtr table, char *word);
+WordListPtr tableInsert(HashTablePtr table, char *word);
