@@ -35,6 +35,7 @@ void toLowerCase(char *string) {
  * Returns 1 if the fuction succeeds, 0 otherwise.
  */
 int readFile(FILE *file, HashTablePtr table) {
+    WordListPtr temp;
     char buffer[300];
     char *word; int count;
     while(fscanf(file,"%s",buffer)){
@@ -42,11 +43,24 @@ int readFile(FILE *file, HashTablePtr table) {
             if(fscanf(file,"%s",buffer)){
                 word = malloc(sizeof(char)*strlen(buffer));
                 word = strcpy(word,buffer);
-                tableInsert(table,word);
-            
+                temp = tableInsert(table,word);
+                while(fscanf(file,"%s",buffer)){
+                    if(strcmp(buffer,"</list>") == 0){
+                        break;
+                    }
+                    free(word)
+                    word = malloc(sizeof(char)*strlen(buffer));
+                    word = strcpy(word,buffer);
+                    FLInsert(temp->files,word);
+                    free(word);
+                    fscanf(file,"%s",buffer);
+                    word = malloc(sizeof(char)*strlen(buffer));
+                    temp->files->count = atoi(word);
+                }
             }
         }
     }
+    return 1;
 }
 
 int main(int argc, char *argv[]) {
