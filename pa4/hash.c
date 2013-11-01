@@ -25,8 +25,15 @@ HashTablePtr makeHashTable(unsigned int size) {
 /*
  * Frees memory allocated by the hash table.
  */
-void DestroyTable(HashTablePtr table) {
-    /*fill in code here*/
+void destroyTable(HashTablePtr table) {
+    int i;
+    for(i = 0; i < table->table_size; i++) {
+        if(table->hash_table[i] != NULL) /*frees any existing Word Lists*/
+            WLDestroy(table->hash_table[i]);
+    }
+    
+    free(table->hash_table);
+    free(table);
 }
 
 /*
@@ -45,9 +52,21 @@ unsigned int FNV32(char *data)
 }
 
 /*
+ * Finds where the word is located in the table and returns the WordList pointer.
+ */
+ WordListPtr tableGet(HashTablePtr table, char *word) {
+    unsigned int hash = FNV32(word) % table->table_size; /*calculates the hash number for the word*/
+    return table->hash_table[hash]; /*returns the WordList pointer from that hash location*/
+ }
+
+/*
  * Inserts a word into the hash table. Uses the Fowler-Noll-Vo (FNV) hash function.
  * Returns a pointer to a node in a linked list of words.
  */
-WordListPtr TableInsert(HashTablePtr table, char *word) {
-    /*fill in code here*/
+WordListPtr tableInsert(HashTablePtr table, char *word) {
+    WordListPtr list = tableGet(table, word);
+    if(list == NULL)
+        list = makeWordList();
+    WLInsert(list, word);
+    return list;
 }

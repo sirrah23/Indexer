@@ -9,12 +9,14 @@
 unsigned int getIndexSize(FILE *file) {
     char buffer[300];
     unsigned int size = 0;
-    char *token;
 
-    while(fgets(buffer, sizeof(buffer), file)) {
-        token = strtok(buffer, " ");
-
+    while(fscanf(file, "%s", buffer) == 1) { /*goes through each string in the file*/
+        if(strcmp(buffer, "<list>") == 0) /*counts the number of distinct words*/
+            size++;
     }
+    
+    rewind(file); /*puts pointer in the file to point to the very beginning*/
+    return size*2; /*size is twice the number of words to reduce hash collisions*/
 }
 
 /*
@@ -33,18 +35,7 @@ void toLowerCase(char *string) {
  * Returns 1 if the fuction succeeds, 0 otherwise.
  */
 int readFile(FILE *file, HashTablePtr table) {
-    char buffer[300];
-    char *word; int count;
-    while(fscanf(file,"%s",buffer)){
-       if(strcmp(buffer,"<list>") == 0){
-            if(fscanf(file,"%s",buffer)){
-                word = malloc(sizeof(char)*strlen(buffer));
-                word = strcpy(word,buffer);
-                tableInsert(table,word);
-            
-            }
-        }
-    }
+    /*fill in code here*/
 }
 
 int main(int argc, char *argv[]) {
@@ -67,7 +58,7 @@ int main(int argc, char *argv[]) {
     
     if(!readFile(index_file, hash_table)) { /*tries to read the file*/
         printf(ERROR_MESSAGE); /*if it fails, print the error message and destroy the hash table*/
-        DestroyTable(hash_table);
+        destroyTable(hash_table);
         return 1;
     }
 
@@ -82,7 +73,7 @@ int main(int argc, char *argv[]) {
         toLowerCase(buffer);
         
         if(strcmp(buffer,"quit") == 0 || strcmp(buffer,"q") == 0) {
-            DestroyTable(hash_table); /*if user quits, free allocated memory*/
+            destroyTable(hash_table); /*if user quits, free allocated memory*/
             printf("Program exited\n");
             return 0; /*breaks out of while loop and returns successful exit to main*/
         }
