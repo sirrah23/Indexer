@@ -9,12 +9,14 @@
 unsigned int getIndexSize(FILE *file) {
     char buffer[300];
     unsigned int size = 0;
-    char *token;
-
-    while(fgets(buffer, sizeof(buffer), file)) {
-        token = strtok(buffer, " ");
-
+    
+    while(fscanf(file, "%s", buffer) == 1) { /*goes through each string in the file*/
+        if(strcmp(buffer, "<list>") == 0) /*counts the number of distinct words*/
+            size++;
     }
+     
+    rewind(file); /*puts pointer in the file to point to the very beginning*/
+    return size*2; /*size is twice the number of words to reduce hash collisions*/
 }
 
 /*
