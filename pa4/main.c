@@ -103,6 +103,27 @@ int main(int argc, char *argv[]) {
             return 0; /*breaks out of while loop and returns successful exit to main*/
         }
 
-        /*Do stuff here to do file searching*/
+        FileListPtr *file_list = NULL;
+        int size = 0;
+        char *token;
+        token = strtok(buffer, " ");
+        if(strcmp(token, "sa") == 0) {
+            while((token = strtok(NULL, " ")) != NULL) {
+                WordListPtr temp = tableGet(hash_table, token);
+                if(temp == NULL) {
+                    if(file_list != NULL) {
+                        free(file_list);
+                        file_list = NULL;
+                    }
+                    break;
+                }
+                if(size == 0)
+                    file_list = malloc(sizeof(FileListPtr));
+                else
+                    file_list = realloc(file_list, sizeof(FileListPtr)*(size+1));
+                file_list[size] = temp->files;
+                size++;
+            }
+        }
     }
 }
