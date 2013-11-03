@@ -63,6 +63,43 @@ int readFile(FILE *file, HashTablePtr table) {
     return 1;
 }
 
+/*
+ * Gets all the file names in an array of FileList pointers and stores them 
+ * in an array of strings. The file name is stored into the array by emulating
+ * XOR to prevent duplication. Returns the size of the resulting array.
+ */
+int UNION(char **result, FileListPtr *files, int size) {
+    int result_size = 0;
+    FileListPtr temp = files[0];
+    while(temp != NULL) { /*gets all the file names in the first FileListPtr and stores them into the result array*/
+        if(result_size == 0)
+            result = malloc(sizeof(char *));
+        else
+            result = realloc(result, sizeof(char *)*(result_size+1));
+        result[result_size] = temp->file_name;
+        result_size++;
+        temp = temp->next;
+    }
+    int i;
+    for(i = 1, i < size, i++) { /*gets the file names from the rest of the FileList pointers and stores them into the result array*/
+        temp = files[i];
+        while(temp != NULL) {
+            int j;
+            for(j = 0; j < result_size; j++) { /*checks if a file name is already in the result*/
+               if(strcmp(result[j], temp->file_name) == 0)
+                   break;
+            }
+            if(j == result_size) { /*add the file name into the result if it's not in the result*/
+                result = realloc(result, sizeof(char *)*(result_size+1));
+                result[result_size] = temp->file_name;
+                result_size++;
+            }
+            temp = temp->next;
+        }
+    }
+    return result_size;
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 2) { /*Only 2 arguments are allowed*/
         printf("Usage: ./search <inverted-index file name>\nAborting\n");
@@ -124,6 +161,9 @@ int main(int argc, char *argv[]) {
                 file_list[size] = temp->files;
                 size++;
             }
+        }
+        if(file_list != NULL) {
+            
         }
     }
 }
