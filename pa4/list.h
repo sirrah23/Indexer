@@ -40,13 +40,13 @@ FileListPtr makeFileList();
  * Inserts a word into the linked list of words.
  * Returns 1 if it succeeds, 0 if not.
  */
-int WLInsert(WordListPtr list, char *data);
+WordListPtr WLInsert(WordListPtr list, char *data);
 
 /*
  * Inserts a file's name into the linked list of files.
  * Returns 1 if it succeeds, 0 if not.
  */
-int FLInsert(FileListPtr list, char *data);
+int FLInsert(FileListPtr list, char *data, int count);
 
 /*
  * Frees allocated memory for the word linked list.

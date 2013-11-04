@@ -67,6 +67,7 @@ WordListPtr tableInsert(HashTablePtr table, char *word) {
     WordListPtr list = tableGet(table, word);
     if(list == NULL)
         list = makeWordList();
-    WLInsert(list, word);
+    if(list != NULL)
+        list = WLInsert(list, word);
     return list;
 }
