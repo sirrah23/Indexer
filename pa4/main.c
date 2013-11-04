@@ -44,16 +44,16 @@ int readFile(FILE *file, HashTablePtr table) {
     WordListPtr temp;
     char buffer[300];
     char *word;
-    while(fscanf(file,"%s",buffer)){
+    while(fscanf(file,"%s",buffer) == 1){
        if(strcmp(buffer,"<list>") == 0){
-            if(fscanf(file,"%s",buffer)){
+            if(fscanf(file,"%s",buffer) == 1){
                 word = malloc(sizeof(char)*strlen(buffer));
                 word = strcpy(word,buffer);
                 temp = tableInsert(table,word);
                 if(temp != NULL) {
                     temp->files = makeFileList();
                     if(temp->files != NULL) {
-                        while(fscanf(file,"%s",buffer)){
+                        while(fscanf(file,"%s",buffer) == 1){
                             if(strcmp(buffer,"</list>") == 0){
                                 break;
                             }
@@ -61,7 +61,8 @@ int readFile(FILE *file, HashTablePtr table) {
                             word = malloc(sizeof(char)*strlen(buffer));
                             word = strcpy(word,buffer);
                             fscanf(file, "%s", buffer);
-                            if(!FLInsert(temp->files,word,atoi(buffer)))
+                            int count = atoi(buffer);
+                            if(!FLInsert(temp->files,word,count))
                                 return 0;
                         }
                     } else
