@@ -131,6 +131,17 @@ int AND(char **union_files, int union_size, FileListPtr *files, int files_size, 
     return result_size;
 }
 
+/*
+ * Prints all the file names in an array of strings.
+ */
+void print(char **files, int size) {
+    int i;
+    printf("%d files were found:", size);
+    for(i = 0; i < size-1; i++)
+        printf(" %s,", files[i]);
+    printf(" and %s.\n", files[i]);
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 2) { /*Only 2 arguments are allowed*/
         printf("Usage: ./search <inverted-index file name>\nAborting\n");
@@ -171,16 +182,15 @@ int main(int argc, char *argv[]) {
             return 0; /*breaks out of while loop and returns successful exit to main*/
         }
 
-        FileListPtr *file_list = NULL;
-        char **result = NULL;
-        int result_size;
-        int size = 0;
-        char *token;
-        token = strtok(buffer, " ");
-        if(strcmp(token, "sa") == 0) {
-            while((token = strtok(NULL, " ")) != NULL) {
+        FileListPtr *file_list = NULL; /*an array of FileList pointers*/
+        int size = 0; /*size of the file_list array*/
+        char **result = NULL; /*an array of the resulting file names*/
+        int result_size; /*the size of the result array*/
+        char *token = strtok(buffer, " ");
+        if(strcmp(token, "sa") == 0) { /*if the user wants all the files that contain all the terms*/
+            while((token = strtok(NULL, " ")) != NULL) { /*goes through all the terms*/
                 WordListPtr temp = tableGet(hash_table, token);
-                if(temp == NULL) {
+                if(temp == NULL) { /*if a term is not in any file, then no files contain all the terms*/
                     if(file_list != NULL) {
                         free(file_list);
                         file_list = NULL;
@@ -191,14 +201,37 @@ int main(int argc, char *argv[]) {
                     file_list = malloc(sizeof(FileListPtr));
                 else
                     file_list = realloc(file_list, sizeof(FileListPtr)*(size+1));
-                file_list[size] = temp->files;
+                file_list[size] = temp->files; /*puts a linked list of files into the file_list array*/
                 size++;
             }
+            if(file_list != NULL) { /*if files were found*/
+                char **union_files;
+                int files_size = UNION(union_files, file_list, size); /*puts all the unique file names into the union_files array*/
+                result_size = AND(union_files, files_size, file_list, size, result); /*puts all the file names that are in all the linked list of the file_list array into the result array*/ 
+                free(file_list); free(union_files);
+            }
+        } else if(strcmp(token, "so") == 0) { /*if the user wants all the files that contain one or more of the terms*/
+            while((token = strtok(NULL, " ")) != NULL) {
+                WordListPtr temp = tableGet(hash_table, token);
+                if(temp != NULL) { /*if there are files that contain a term*/
+                    if(size == 0)
+                        file_list = malloc(sizeof(FileListPtr));
+                    else
+                        file_list = realloc(file_list, sizeof(FileListPtr)*(size+1));
+                    file_list[size] = temp->files; /*puts a linked list of files into the file_list array*/
+                    size++;
+                }
+            }
+            if(file_list != NULL) { /*if files were found*/
+                result_size = UNION(result, file_list, size); /*puts all the unique file names into the result array*/
+                free(file_list);
+            }
         }
-        if(file_list != NULL) {
-            char **union_files;
-            int files_size = UNION(union_files, file_list, size);
-            result_size = AND(union_files, files_size, file_list, size, result);
+        if(result == NULL) /*checks if there were files found*/
+            printf("No files were found\n");
+        else {
+            print(result, result_size); /*prints the file names*/
+            free(result);
         }
     }
 }
