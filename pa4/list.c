@@ -82,6 +82,8 @@ void WLDestroy(WordListPtr list) {
         p1 = p2;    /*Go to next node*/
         p2 = p1->next;
     }
+    FLDestroy(p1->files);
+    free(p1->word);
     free(p1);
     return;
 }
@@ -99,6 +101,7 @@ void FLDestroy(FileListPtr list) {
         p1 = p2;        /*Go to next node*/
         p2 = p1->next;
     }
+    free(p1->file_name);
     free(p1);
     return;
 }

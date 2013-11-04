@@ -47,7 +47,7 @@ int readFile(FILE *file, HashTablePtr table) {
     while(fscanf(file,"%s",buffer) == 1){
        if(strcmp(buffer,"<list>") == 0){
             if(fscanf(file,"%s",buffer) == 1){
-                word = malloc(sizeof(char)*strlen(buffer));
+                word = malloc(sizeof(char) * (strlen(buffer)+1));
                 word = strcpy(word,buffer);
                 temp = tableInsert(table,word);
                 if(temp != NULL) {
@@ -57,8 +57,7 @@ int readFile(FILE *file, HashTablePtr table) {
                             if(strcmp(buffer,"</list>") == 0){
                                 break;
                             }
-                            /*free(word);*/
-                            word = malloc(sizeof(char)*strlen(buffer));
+                            word = malloc(sizeof(char) * (strlen(buffer)+1));
                             word = strcpy(word,buffer);
                             fscanf(file, "%s", buffer);
                             int count = atoi(buffer);
@@ -171,12 +170,14 @@ int main(int argc, char *argv[]) {
     HashTablePtr hash_table = makeHashTable(getIndexSize(index_file));
     if(hash_table == NULL) { /*if it fails to malloc memory for the hash table*/
         printf(ERROR_MESSAGE);
+        fclose(index_file);
         return 1;
     }
     
     if(!readFile(index_file, hash_table)) { /*tries to read the file*/
         printf(ERROR_MESSAGE); /*if it fails, print the error message and destroy the hash table*/
         destroyTable(hash_table);
+        fclose(index_file);
         return 1;
     }
 
@@ -192,6 +193,7 @@ int main(int argc, char *argv[]) {
         
         if(strcmp(buffer,"quit") == 0 || strcmp(buffer,"q") == 0) {
             destroyTable(hash_table); /*if user quits, free allocated memory*/
+            fclose(index_file);
             printf("Program exited\n");
             return 0; /*breaks out of while loop and returns successful exit to main*/
         }
