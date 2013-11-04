@@ -78,18 +78,17 @@ int readFile(FILE *file, HashTablePtr table) {
 /*
  * Gets all the file names in an array of FileList pointers and stores them 
  * in an array of strings. The file name is stored into the array by emulating
- * XOR to prevent duplication. Returns the size of the resulting array.
+ * XOR to prevent duplication. Returns the resulting array.
  */
-int UNION(char **result, FileListPtr *files, int size) {
-    int result_size = 0;
+char** UNION(char **result, int *result_size, FileListPtr *files, int size) {
     FileListPtr temp = files[0];
     while(temp != NULL) { /*gets all the file names in the first FileListPtr and stores them into the result array*/
-        if(result_size == 0)
+        if(*result_size == 0)
             result = malloc(sizeof(char *));
         else
-            result = realloc(result, sizeof(char *)*(result_size+1));
-        result[result_size] = temp->file_name;
-        result_size++;
+            result = realloc(result, sizeof(char *)*((*result_size)+1));
+        result[*result_size] = temp->file_name;
+        (*result_size)++;
         temp = temp->next;
     }
     int i;
@@ -97,19 +96,19 @@ int UNION(char **result, FileListPtr *files, int size) {
         temp = files[i];
         while(temp != NULL) {
             int j;
-            for(j = 0; j < result_size; j++) { /*checks if a file name is already in the result*/
+            for(j = 0; j < *result_size; j++) { /*checks if a file name is already in the result*/
                if(strcmp(result[j], temp->file_name) == 0)
                    break;
             }
-            if(j == result_size) { /*add the file name into the result if it's not in the result*/
-                result = realloc(result, sizeof(char *)*(result_size+1));
-                result[result_size] = temp->file_name;
-                result_size++;
+            if(j == *result_size) { /*add the file name into the result if it's not in the result*/
+                result = realloc(result, sizeof(char *)*((*result_size)+1));
+                result[*result_size] = temp->file_name;
+                (*result_size)++;
             }
             temp = temp->next;
         }
     }
-    return result_size;
+    return result;
 }
 
 /*
@@ -197,7 +196,7 @@ int main(int argc, char *argv[]) {
         FileListPtr *file_list = NULL; /*an array of FileList pointers*/
         int size = 0; /*size of the file_list array*/
         char **result = NULL; /*an array of the resulting file names*/
-        int result_size; /*the size of the result array*/
+        int result_size = 0; /*the size of the result array*/
         char *token = strtok(buffer, " ");
         if(strcmp(token, "sa") == 0) { /*if the user wants all the files that contain all the terms*/
             while((token = strtok(NULL, " ")) != NULL) { /*goes through all the terms*/
@@ -217,8 +216,8 @@ int main(int argc, char *argv[]) {
                 size++;
             }
             if(file_list != NULL) { /*if files were found*/
-                char **union_files = NULL;
-                int files_size = UNION(union_files, file_list, size); /*puts all the unique file names into the union_files array*/
+                int files_size = 0;
+                char **union_files = UNION(union_files, &files_size, file_list, size); /*puts all the unique file names into the union_files array*/
                 result_size = AND(union_files, files_size, file_list, size, result); /*puts all the file names that are in all the linked list of the file_list array into the result array*/ 
                 free(file_list);
                 if(union_files != NULL)
@@ -237,7 +236,7 @@ int main(int argc, char *argv[]) {
                 }
             }
             if(file_list != NULL) { /*if files were found*/
-                result_size = UNION(result, file_list, size); /*puts all the unique file names into the result array*/
+                result = UNION(result, &result_size, file_list, size); /*puts all the unique file names into the result array*/
                 free(file_list);
             }
         }

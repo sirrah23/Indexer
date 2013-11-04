@@ -57,9 +57,12 @@ int FLInsert(FileListPtr list, char *data, int count) {
     }
     FileListPtr tobeinserted = makeFileList();  /*Else create a new file list node*/
     if(tobeinserted != NULL) {
-        tobeinserted->file_name = data;           
-        tobeinserted->next = list;                  /*Make it the head and point it to the rest of the list*/
-        tobeinserted->count = count;
+        tobeinserted->file_name = list->file_name;           
+        tobeinserted->next = list->next;                  /*Make it the head and point it to the rest of the list*/
+        tobeinserted->count = list->count;
+        list->file_name = data;
+        list->next = tobeinserted;
+        list->count = count;
         return 1;
     }
     return 0;
