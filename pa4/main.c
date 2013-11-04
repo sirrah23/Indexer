@@ -116,8 +116,7 @@ char** UNION(char **result, int *result_size, FileListPtr *files, int size) {
  * then that file name will be stored in the result array. This emulates a logical AND.
  * Returns the size of the result array.
  */
-int AND(char **union_files, int union_size, FileListPtr *files, int files_size, char **result) {
-    int result_size = 0;
+char** AND(char **union_files, int union_size, FileListPtr *files, int files_size, char **result, int *result_size) {
     int i;
     for(i = 0; i < union_size; i++) { /*checks all of the file names in union_files*/
         int count = 0; /*the number of times a file name occurs in a list of files*/
@@ -131,15 +130,15 @@ int AND(char **union_files, int union_size, FileListPtr *files, int files_size, 
             }
         }
         if(count == files_size) { /*if a file name occurred in all of the file lists*/
-            if(result_size == 0)
+            if(*result_size == 0)
                 result = malloc(sizeof(char *));
             else
-                result = realloc(result, sizeof(char *)*(result_size+1));
-            result[result_size] = union_files[i]; /*store into the result*/
-            result_size++;
+                result = realloc(result, sizeof(char *)*((*result_size)+1));
+            result[*result_size] = union_files[i]; /*store into the result*/
+            (*result_size)++;
         }
     }
-    return result_size;
+    return result;
 }
 
 /*
@@ -218,7 +217,7 @@ int main(int argc, char *argv[]) {
             if(file_list != NULL) { /*if files were found*/
                 int files_size = 0;
                 char **union_files = UNION(union_files, &files_size, file_list, size); /*puts all the unique file names into the union_files array*/
-                result_size = AND(union_files, files_size, file_list, size, result); /*puts all the file names that are in all the linked list of the file_list array into the result array*/ 
+                result = AND(union_files, files_size, file_list, size, result, &result_size); /*puts all the file names that are in all the linked list of the file_list array into the result array*/ 
                 free(file_list);
                 if(union_files != NULL)
                     free(union_files);
