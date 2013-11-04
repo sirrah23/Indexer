@@ -100,6 +100,37 @@ int UNION(char **result, FileListPtr *files, int size) {
     return result_size;
 }
 
+/*
+ * Checks if a file name in union_files is in all of the file lists. If it is,
+ * then that file name will be stored in the result array. This emulates a logical AND.
+ * Returns the size of the result array.
+ */
+int AND(char **union_files, int union_size, FileListPtr *files, int files_size, char **result) {
+    int result_size = 0;
+    int i;
+    for(i = 0; i < union_size; i++) { /*checks all of the file names in union_files*/
+        int count = 0; /*the number of times a file name occurs in a list of files*/
+        int j;
+        for(j = 0; j < files_size; j++) { /*for all the file lists in the files array*/
+            FileListPtr temp = files[j];
+            while(temp != NULL) { /*goes through a file list*/
+                if(strcmp(union_files[i], temp->file_name) == 0)
+                    count++; /*if a file name occurred in a file list, increment count*/
+                temp = temp->next;
+            }
+        }
+        if(count == files_size) { /*if a file name occurred in all of the file lists*/
+            if(result_size == 0)
+                result = malloc(sizeof(char *));
+            else
+                result = realloc(result, sizeof(char *)*(result_size+1));
+            result[result_size] = union_files[i]; /*store into the result*/
+            result_size++;
+        }
+    }
+    return result_size;
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 2) { /*Only 2 arguments are allowed*/
         printf("Usage: ./search <inverted-index file name>\nAborting\n");
@@ -141,6 +172,8 @@ int main(int argc, char *argv[]) {
         }
 
         FileListPtr *file_list = NULL;
+        char **result = NULL;
+        int result_size;
         int size = 0;
         char *token;
         token = strtok(buffer, " ");
@@ -163,7 +196,9 @@ int main(int argc, char *argv[]) {
             }
         }
         if(file_list != NULL) {
-            
+            char **union_files;
+            int files_size = UNION(union_files, file_list, size);
+            result_size = AND(union_files, files_size, file_list, size, result);
         }
     }
 }
