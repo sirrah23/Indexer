@@ -146,10 +146,14 @@ char** AND(char **union_files, int union_size, FileListPtr *files, int files_siz
  */
 void print(char **files, int size) {
     int i;
-    printf("%d files were found:", size);
-    for(i = 0; i < size-1; i++)
-        printf(" %s,", files[i]);
-    printf(" and %s.\n", files[i]);
+    if(size == 1)
+        printf("%d file was found: %s\n", size, files[0]);
+    else {
+        printf("%d files were found: %s,", size, files[0]);
+        for(i = 1; i < size-1; i++)
+            printf(" %s,", files[i]);
+        printf(" and %s\n", files[i]);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -238,12 +242,16 @@ int main(int argc, char *argv[]) {
                 result = UNION(result, &result_size, file_list, size); /*puts all the unique file names into the result array*/
                 free(file_list);
             }
-        }
+        } else
+            printf("Invalid input\n");
         if(result == NULL) /*checks if there were files found*/
             printf("No files were found\n");
         else {
+            char x;
             print(result, result_size); /*prints the file names*/
             free(result);
+            printf("Press ENTER to continue...");
+            scanf("%c", &x);
         }
     }
 }
