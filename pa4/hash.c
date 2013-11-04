@@ -64,10 +64,10 @@ unsigned int FNV32(char *data)
  * Returns a pointer to a node in a linked list of words.
  */
 WordListPtr tableInsert(HashTablePtr table, char *word) {
-    WordListPtr list = tableGet(table, word);
-    if(list == NULL)
-        list = makeWordList();
-    if(list != NULL)
-        list = WLInsert(list, word);
-    return list;
+    unsigned int hash = FNV32(word) % table->table_size; /*calculates the hash number for the word*/
+    if(table->hash_table[hash] == NULL)
+        table->hash_table[hash] = makeWordList();
+    if(table->hash_table[hash] != NULL)
+        table->hash_table[hash] = WLInsert(table->hash_table[hash], word);
+    return table->hash_table[hash];
 }
