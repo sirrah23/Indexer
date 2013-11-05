@@ -56,7 +56,13 @@ unsigned int FNV32(char *data)
  */
  WordListPtr tableGet(HashTablePtr table, char *word) {
     unsigned int hash = FNV32(word) % table->table_size; /*calculates the hash number for the word*/
-    return table->hash_table[hash]; /*returns the WordList pointer from that hash location*/
+    WordListPtr temp = table->hash_table[hash]; /*WordList pointer from that hash location*/
+    while(temp != NULL) {
+        if(strcmp(temp->word, word) == 0)
+            return temp;
+        temp = temp->next;
+    }
+    return NULL;
  }
 
 /*
