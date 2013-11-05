@@ -44,24 +44,24 @@ int readFile(FILE *file, HashTablePtr table) {
     WordListPtr temp;
     char buffer[300];
     char *word;
-    while(fscanf(file,"%s",buffer) == 1){
-       if(strcmp(buffer,"<list>") == 0){
-            if(fscanf(file,"%s",buffer) == 1){
-                word = malloc(sizeof(char) * (strlen(buffer)+1));
-                word = strcpy(word,buffer);
-                temp = tableInsert(table,word);
+    while(fscanf(file,"%s",buffer) == 1){	/*Goes through the file while there are still words*/
+       if(strcmp(buffer,"<list>") == 0){	/*If we have reached a new word in the list of words*/
+            if(fscanf(file,"%s",buffer) == 1){	/*Then simply obtain the next word if there is one*/
+                word = malloc(sizeof(char) * (strlen(buffer)+1));	/*malloc space for the word holder*/
+                word = strcpy(word,buffer);		/*Copy the word that we have obtained from the file into the variable*/	
+                temp = tableInsert(table,word);	/*Insert it into the hash table*/
                 if(temp != NULL) {
-                    temp->files = makeFileList();
-                    if(temp->files != NULL) {
-                        while(fscanf(file,"%s",buffer) == 1){
-                            if(strcmp(buffer,"</list>") == 0){
+                    temp->files = makeFileList();	/*At that point in the table create a new filelist*/
+                    if(temp->files != NULL) {	
+                        while(fscanf(file,"%s",buffer) == 1){	/*Continue obtaining file names*/
+                            if(strcmp(buffer,"</list>") == 0){	/*No more file name exit*/
                                 break;
                             }
-                            word = malloc(sizeof(char) * (strlen(buffer)+1));
-                            word = strcpy(word,buffer);
-                            fscanf(file, "%s", buffer);
-                            int count = atoi(buffer);
-                            if(!FLInsert(temp->files,word,count))
+                            word = malloc(sizeof(char) * (strlen(buffer)+1));	/*malloc space for the file name*/
+                            word = strcpy(word,buffer);		/*Copy the word into the variable*/
+                            fscanf(file, "%s", buffer);		/*obtain the next word which is the count*/
+                            int count = atoi(buffer);		/*convert the count to a number*/
+                            if(!FLInsert(temp->files,word,count))	/*Insert it into the count for the file*/
                                 return 0;
                         }
                     } else
