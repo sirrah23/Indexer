@@ -1,0 +1,243 @@
+Harris Seth
+Von Quilon
+
+Test Cases PA4
+--------------
+Test 1 Input:
+---------------
+<list> also
+test1 1 test2 1 
+</list>
+<list> an
+test1 1 test2 1 
+</list>
+<list> analysis
+test1 1 test2 1 
+</list>
+<list> and
+test1 2 test2 2 
+</list>
+<list> are
+test1 1 test2 1 
+</list>
+<list> automatically
+test1 1 test2 1 
+</list>
+<list> bugs
+test1 1 test2 1 
+</list>
+<list> build
+test1 1 test2 1 
+</list>
+<list> building
+test1 1 test2 1 
+</list>
+<list> can
+test1 2 test2 2 
+</list>
+<list> detail
+test1 1 test2 1 
+</list>
+<list> detect
+test1 1 test2 1 
+</list>
+<list> dynamic
+test1 1 test2 1 
+</list>
+<list> for
+test1 1 test2 1 
+</list>
+<list> framework
+test1 1 test2 1 
+</list>
+<list> in
+test1 1 test2 1 
+</list>
+<list> instrumentation
+test1 1 test2 1 
+</list>
+<list> is
+test1 1 test2 1 
+</list>
+<list> management
+test1 1 test2 1 
+</list>
+<list> many
+test1 1 test2 1 
+</list>
+<list> memory
+test1 1 test2 1 
+</list>
+<list> new
+test1 1 test2 1 
+</list>
+<list> profile
+test1 1 test2 1 
+</list>
+<list> programs
+test1 1 test2 1 
+</list>
+<list> that
+test1 1 test2 1 
+</list>
+<list> there
+test1 1 test2 1 
+</list>
+<list> threading
+test1 1 test2 1 
+</list>
+<list> to
+test1 1 test2 1 
+</list>
+<list> tools
+test1 3 test2 3 
+</list>
+<list> use
+test1 1 test2 1 
+</list>
+<list> valgrind
+test1 3 test2 3 
+</list>
+<list> you
+test1 1 test2 1 
+</list>
+<list> your
+test1 1 test2 1 
+</list>
+
+Test 1 input tests:
+sa that there threading
+so that there threading
+sa use valgrind new profile
+so use valgrind new profile
+sa build building automatically are 
+so quilon
+
+Test 1 expected output:
+2 files were found: test2, and test1
+2 files were found: test2, and test1
+2 files were found: test2, and test1
+2 files were found: test2, and test1
+2 files were found: test2, and test1
+No files were found
+
+Test 2 Input:
+--------------
+<list> a
+test1 1 test2 1 
+</list>
+<list> ass
+sample2/test1 1 
+</list>
+<list> of
+test1 1 test2 1 
+</list>
+<list> peck
+test1 1 test2 1 
+</list>
+<list> pepper
+test1 1 test2 1 
+</list>
+<list> peter
+test2 2 test1 1 sample2/test1 1 
+</list>
+<list> picked
+test1 1 test2 1 
+</list>
+<list> pickled
+test1 1 test2 1 
+</list>
+<list> piper
+test2 2 test1 1 sample2/test1 1 
+</list>
+<list> sucks
+sample2/test1 1 
+</list>
+
+Test 2 input search:
+sa a
+so a
+sa pepper peter 
+so pepper peter
+sa von quilon
+so ass
+
+Test 2 expected output:
+2 files found: test2, and test 1
+2 files found: test2, and test 1
+2 files found: test2, and test 1
+2 files found: test2, and test 1
+No files were found
+1 file was found: test1
+
+Test 3 Input:
+--------------
+<list> 5
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> a
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> determine
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> if
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> in
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> is
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> layers
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> like
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> program
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> test
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> this
+sample4/sample5/sample6/sample7/test 2 
+</list>
+<list> to
+sample4/sample5/sample6/sample7/test 1 
+</list>
+<list> works
+sample4/sample5/sample6/sample7/test 1 
+</list>
+
+Test Input For Search:
+sa works
+so works
+sa league
+so this to works
+sa layers like
+
+Test Expected Output:
+1 file was found: sample4/sample5/sample6/sample7/tes
+1 file was found: sample4/sample5/sample6/sample7/test
+No files found
+1 file was found: sample4/sample5/sample6/sample7/test
+1 file was found: sample4/sample5/sample6/sample7/test
+
+Test Input 4:
+---------------
+
+Test input for search:
+sa hashtag yolo swag
+so swiggidy
+sa von quilon harris seth
+sa chicken sandwich
+
+Test expected Output:
+No files were found
+No files were found
+No files were found
+No files were found
+
