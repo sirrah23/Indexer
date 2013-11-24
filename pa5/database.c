@@ -6,6 +6,14 @@
  */
 CustomerPtr makeCustomer() {
     CustomerPtr customer = malloc(sizeof(struct Customer));
+    if(customer != NULL) {
+        customer->name = NULL;
+        customer->id = -1;
+        customer->money = 0;
+        customer->address = NULL;
+        customer->state = NULL;
+        customer->zipcode = NULL;
+    }
     return customer;
 }
 
@@ -74,7 +82,7 @@ int insert(DatabasePtr database, char *information) {
     /*Make a customer node*/
     CustomerPtr customer;
     if((customer = makeCustomer()) == NULL)
-        return 0;
+        return 0; /*Failed to make a customer node*/
     
     int id; float money;
     char *name, *address, *state, *zipcode;
@@ -112,6 +120,7 @@ int insert(DatabasePtr database, char *information) {
     }
     
     /*Stores customer into the database*/
-    database->table[id] = customer;
-    return 1;
+    if(customer->id != -1)
+        database->table[id] = customer;
+    return 1;/*Successfully stored a customer into the database*/
 }
