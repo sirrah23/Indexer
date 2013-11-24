@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 /*
  * A node that holds customer information.
  */
