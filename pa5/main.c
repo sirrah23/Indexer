@@ -1,6 +1,10 @@
 #include <stdio.h>
-#include <string.h>
 #include <pthread.h>
+#include "database.h"
+
+/*Shared variables for the threads*/
+DatabasePtr database;
+pthread_mutex_t mutex;
 
 /*
  * Returns the number of categories.
@@ -35,11 +39,53 @@ char **getCategories(FILE *file, char **array) {
     return array;
 }
 
+/*
+ * Gets the number of customers in the database.
+ */
+int getDatabaseSize(FILE *file) {
+    char buffer[300];
+    char *token;
+    int id, max = 0;
+
+    /*Checks each line in the database file*/
+    while(fgets(buffer, sizeof(buffer), file) != NULL) {
+        token = strtok(buffer, "|");
+        while(token != NULL) {
+            /*If token is an integer*/
+            if(sscanf(token, "%d", &id) == 1) {
+                if(id > max)
+                    max = id; /*max will hold the largest customer ID*/
+                break;
+            }
+            token = strtok(NULL, "|");
+        }
+    }
+
+    rewind(file);
+    return max;
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 4) { /*checks for proper user input*/
         printf("Usage: ./order <database file> <book orders file> <categories file>\nAborting\n");
         return 1;
     }
+
+    FILE *database_file = fopen(argv[1], "r");
+    if(database_file == NULL) { /*checks if file exists*/
+        printf("Failed to read file %s or this file does not exist\nAborting\n", argv[1]);
+        return 1;
+    }
+
+    /*Initializes the database*/
+    database = makeDatabase(getDatabaseSize(database_file));
+    if(database == NULL) { /*Checks for initialization failure*/
+        printf("Failed to make the database\nCheck file %s\nAborting\n", argv[1]);
+        fclose(database_file);
+        return 1;
+    }
+
+    
 
     FILE *categories_file = fopen(argv[3], "r");
     if(categories_file == NULL) { /*checks if file exists*/
@@ -51,8 +97,6 @@ int main(int argc, char *argv[]) {
     char *categories[num_threads];
     categories = getCategories(categories_file, categories);
     fclose(categories_file);
-
-    /*make the database*/
 
     pthread_t consumers[num_threads]; /*holds the threads*/
 

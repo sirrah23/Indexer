@@ -21,8 +21,14 @@ CustomerPtr makeCustomer() {
  * Frees any memory allocated by a Customer struct.
  */
 void destroyCustomer(CustomerPtr customer) {
-    free(customer->name); free(customer->address);
-    free(customer->state); free(customer->zipcode);
+    if(customer->name != NULL)
+        free(customer->name);
+    if(customer->address != NULL)
+        free(customer->address);
+    if(customer->state != NULL)
+        free(customer->state);
+    if(customer->zipcode != NULL)
+        free(customer->zipcode);
     free(customer);
 }
 
@@ -31,7 +37,9 @@ void destroyCustomer(CustomerPtr customer) {
  * Returns NULL if function fails
  */
 DatabasePtr makeDatabase(int size) {
-    DatabasePtr database = malloc(sizeof(struct Database));
+    DatabasePtr database = NULL;
+    if(size != 0)
+        database = malloc(sizeof(struct Database));
     if(database != NULL) {
         database->table = calloc(sizeof(CustomerPtr) * size);
         database->table_size = size;
@@ -122,5 +130,7 @@ int insert(DatabasePtr database, char *information) {
     /*Stores customer into the database*/
     if(customer->id != -1)
         database->table[id] = customer;
+    else
+        destroyCustomer(customer);
     return 1;/*Successfully stored a customer into the database*/
 }
