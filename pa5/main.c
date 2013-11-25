@@ -133,8 +133,17 @@ void *consumFunc(void *categorystring){
 			}
 			else{
 				temp = dequeue(sharedQ);
-				printf("Order processing here please %s \n",(char *)categorystring);
-				pthread_mutex_unlock(&mutex);
+				if(database->table[temp->id]->money > temp->cost){
+					database->table[temp->id]->money -= temp->cost;
+					printf("Order Confirmed! Book Title: %s, Price: %f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, database->table[temp->id]->name						,database->table[temp->id]->address, database->table[temp->id]->state, database->table[temp->id]->zipcode); 
+					pthread_mutex_unlock(&mutex);
+				}
+				else{
+					printf("Order Rejected! Customer: %s, Book Title: %s, Price: %f, Remaining Balance: %f\n", database->table[temp->id]->name, 
+							temp->title, temp->cost, database->table[temp->id]->money);
+					pthread_mutex_unlock(&mutex);
+				}
+				
 			}
 		}
 	}
