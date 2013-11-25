@@ -70,7 +70,7 @@ NodePtr peek(QueuePtr q){
 }
 
 int isEmpty(QueuePtr q){
-	if(q->head->title == NULL)
+	if(q->head == NULL || q->head->title == NULL)
 		return 1;
 	return 0;	
 }

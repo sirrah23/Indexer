@@ -175,6 +175,7 @@ int main(int argc, char *argv[]) {
 	FILE *order_file = fopen(argv[2], "r");
 	int nt;/*Number thread we are currently at*/
 	int *truth;
+	sharedQ = createQueue();
 	pthread_t producer; /*This is the thread that will produce the queue*/
 	pthread_mutex_init(&mutex, NULL); /*Initialize the mutex*/
 	pthread_create(&producer, NULL, producerFunc, (void *)order_file); /*Run the producer thread the generate the queue*/
