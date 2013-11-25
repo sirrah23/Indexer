@@ -65,6 +65,22 @@ int getDatabaseSize(FILE *file) {
     return max;
 }
 
+/*
+ * Reads a database file and stores it in a database in memory.
+ * Returns a 1 in success, 0 otherwise.
+ */
+int readDatabaseFile(FILE *file, DatabasePtr database) {
+  char buffer[300];
+
+  /*Goes through each line in the file*/
+  while(fgets(buffer, sizeof(buffer), file) != NULL) {
+      if(!insert(database, buffer))
+          return 0; /*Inserting into the database fails*/
+  }
+
+  return 1; /*On success*/
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 4) { /*checks for proper user input*/
         printf("Usage: ./order <database file> <book orders file> <categories file>\nAborting\n");
@@ -85,7 +101,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    
+    /*Checks for failure while reading the database file*/
+    if(!readDatabaseFile(database_file, database)) {
+       printf("Failed to make the database\nInvalid file %s\nAborting\n", argv[1]);
+       fclose(database_file);
+       return 1;
+    }
+
+    fclose(database_file); /*Done with the database file*/
 
     FILE *categories_file = fopen(argv[3], "r");
     if(categories_file == NULL) { /*checks if file exists*/
