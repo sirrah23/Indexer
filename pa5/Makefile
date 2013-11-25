@@ -4,7 +4,7 @@ ORDER_H = database.h queue.h
 all: order
 
 order: $(ORDER_C) $(ORDER_H)
-	gcc $(ORDER_C) -Wall -g -o order
+	gcc $(ORDER_C) -Wall -pthread -g -o order
 
 clean:
 	rm -f order

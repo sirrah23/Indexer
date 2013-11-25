@@ -102,7 +102,7 @@ void *producerFunc(void *filename){
 		enqueue(title, cost, id, category, sharedQ);	/*Enqueue info to global queue*/
 	}	
 	pthread_mutex_unlock(&mutex); /*Unlock the function*/
-	return;
+	pthread_exit(NULL);
 }
 
 void *consumFunc(void *categorystring){
@@ -126,7 +126,6 @@ void *consumFunc(void *categorystring){
 	}
 	boolz = 0;
 	pthread_exit(&boolz);
-	return;
 }
 
 int main(int argc, char *argv[]) {
