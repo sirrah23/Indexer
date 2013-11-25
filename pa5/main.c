@@ -82,7 +82,7 @@ int readDatabaseFile(FILE *file, DatabasePtr database) {
 
 /*Builds up the initial queue */
 
-void producerFunc(void *filename){
+void *producerFunc(void *filename){
 	pthread_mutex_lock(&mutex);	/*Lock this so queue isn't messed with during build*/
 	FILE *input = (FILE *) filename;	/*Grabbing data from the orders file*/	
 	char buffer[300];	/*buffer to hold each line*/
@@ -105,7 +105,7 @@ void producerFunc(void *filename){
 	return;
 }
 
-void consumFunc(void *categorystring){
+void *consumFunc(void *categorystring){
 	pthread_mutex_lock(&mutex);
 	char *category = (char *)categorystring;
 	float credits;
@@ -174,15 +174,14 @@ int main(int argc, char *argv[]) {
     /*Do thread stuff here*/
 	
 	FILE *order_file = fopen(argv[2], "r");
-	void *filept = order_file;
 	int nt;/*Number thread we are currently at*/
 	int *truth;
 	pthread_t producer; /*This is the thread that will produce the queue*/
 	pthread_mutex_init(&mutex, NULL); /*Initialize the mutex*/
-	pthread_create(&producer, NULL, &producerFunc, filept); /*Run the producer thread the generate the queue*/
+	pthread_create(&producer, NULL, producerFunc, (void *)order_file); /*Run the producer thread the generate the queue*/
 	while(!isEmpty(sharedQ)){	/*While the queue has stuff in it*/
 		for(nt = 0; nt < num_threads; nt++){ /*Go through all the consumer threads*/
-			pthread_create(&(consumers[nt]), NULL, &consumFunc,(void *) categories[nt]); /*Run each consumer thread*/
+			pthread_create(&(consumers[nt]), NULL, consumFunc,(void *) categories[nt]); /*Run each consumer thread*/
 			pthread_join(consumers[nt], (void *)&truth);
 			if(*truth) break;
 		}
