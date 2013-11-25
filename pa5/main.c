@@ -24,9 +24,8 @@ int getSize(FILE *file) {
 
 /*
  * Stores the categories in the array.
- * Returns the array.
  */
-char **getCategories(FILE *file, char **array) {
+void getCategories(FILE *file, char **array) {
     char buffer[300];
     int i = 0;
 
@@ -37,8 +36,6 @@ char **getCategories(FILE *file, char **array) {
         array[i] = string; /*stores string in the array*/
         i++;
     }
-
-    return array;
 }
 
 /*

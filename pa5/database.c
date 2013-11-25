@@ -41,7 +41,7 @@ DatabasePtr makeDatabase(int size) {
     if(size != 0)
         database = malloc(sizeof(struct Database));
     if(database != NULL) {
-        database->table = calloc(sizeof(CustomerPtr) * size);
+        database->table = calloc(size, sizeof(CustomerPtr));
         database->table_size = size;
     }
     return database;
@@ -65,20 +65,52 @@ void destroyDatabase(DatabasePtr database) {
  */
 CustomerPtr get(DatabasePtr database, int customer_id) {
     if(customer_id <= database->table_size)
-        return database->table[customer_id];
+        return database->table[customer_id-1];
     else
         return NULL;
 }
 
 /*
- * Copies n characters from str2 to str1 starting at position
- * offset in str2. Returns str1.
+ * Returns 1 if char c is included in str, 0 otherwise.
  */
-char *copy(char *str1, char *str2, int offset, int n) {
+int include(char c, char *str) {
     int i;
-    for(i = 0; i < n; i++)
-        str1[i] = str2[i+offset];
-    str1[i] = '\0';
+    for(i = 0; str[i] != '\0'; i++) {
+        if(c == str[i])
+            return 1;
+    }
+    return 0;
+}
+
+/*
+ * Copies contents of str2 that are not in str3 into str1.
+ * Returns str1.
+ */
+char *copy(char *str1, char *str2, char *str3) {
+    int size = 0, i;
+
+    for(i = 0; str2[i] != '\0'; i++) {
+        if(!include(str2[i], str3) && str2[i]!=' ') {
+            size++;
+            break;
+        }
+    }
+
+    str1 = malloc(sizeof(char));
+    str1[size-1] = str2[i];
+    i++;
+    while(str2[i] != '\0') {
+        if(!include(str2[i], str3)) {
+            size++;
+            str1 = realloc(str1, sizeof(char)*size);
+            str1[size-1] = str2[i];
+        } else
+            break;
+        i++;
+    }
+
+    str1 = realloc(str1, sizeof(char) * (size+1));
+    str1[size] = '\0';
     return str1;
 }
 
@@ -95,12 +127,11 @@ int insert(DatabasePtr database, char *information) {
     int id; float money;
     char *name, *address, *state, *zipcode;
     char *token;
+    static char *invalid_chars = "\b\f\n\r\t\v\"\'\\";
 
     /*Stores name in the customer node*/
-    if((token = strtok(information, "|")) != NULL) {
-        name = malloc(sizeof(char) * (strlen(token)-1));
-        customer->name = copy(name, token, 1, strlen(token)-2);
-    }
+    if((token = strtok(information, "|")) != NULL)
+        customer->name = copy(name, token, invalid_chars);
     /*Stores customer ID in the customer node*/
     if((token = strtok(NULL, "|")) != NULL) {
         if(sscanf(token, "%d", &id) == 1)
@@ -112,24 +143,18 @@ int insert(DatabasePtr database, char *information) {
             customer->money = money;
     }
     /*Stores address in the customer node*/
-    if((token = strtok(NULL, "|")) != NULL) {
-        address = malloc(sizeof(char) * (strlen(token)-1));
-        customer->address = copy(address, token, 1, strlen(token)-2);
-    }
+    if((token = strtok(NULL, "|")) != NULL)
+        customer->address = copy(address, token, invalid_chars);
     /*Stores customer's state in the customer node*/
-    if((token = strtok(NULL, "|")) != NULL) {
-        state = malloc(sizeof(char) * (strlen(token)-1));
-        customer->state = copy(state, token, 1, strlen(token)-2);
-    }
+    if((token = strtok(NULL, "|")) != NULL) 
+        customer->state = copy(state, token, invalid_chars);
     /*Stores customer's zipcode in the customer node*/
-    if((token = strtok(NULL, "|")) != NULL) {
-        zipcode = malloc(sizeof(char) * (strlen(token)-1));
-        customer->zipcode = copy(zipcode, token, 1, strlen(token)-2);
-    }
+    if((token = strtok(NULL, "|")) != NULL)
+        customer->zipcode = copy(zipcode, token, invalid_chars);
     
     /*Stores customer into the database*/
     if(customer->id != -1)
-        database->table[id] = customer;
+        database->table[id-1] = customer;
     else
         destroyCustomer(customer);
     return 1;/*Successfully stored a customer into the database*/
