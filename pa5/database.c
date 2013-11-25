@@ -125,7 +125,8 @@ int insert(DatabasePtr database, char *information) {
         return 0; /*Failed to make a customer node*/
     
     int id; float money;
-    char *name, *address, *state, *zipcode;
+    char *name = NULL, *address = NULL; 
+    char *state = NULL, *zipcode = NULL;
     char *token;
     static char *invalid_chars = "\b\f\n\r\t\v\"\'\\";
 
