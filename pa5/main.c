@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <pthread.h>
 #include "database.h"
+#include "queue.h"
 
 /*Shared variables for the threads*/
 DatabasePtr database;
+QueuePtr sharedQ;
 pthread_mutex_t mutex;
 
 /*
@@ -81,6 +83,31 @@ int readDatabaseFile(FILE *file, DatabasePtr database) {
   return 1; /*On success*/
 }
 
+/*Builds up the initial queue */
+
+void consumFunc(void *filename){
+	pthread_mutex_lock(&mutex);	/*Lock this so queue isn't messed with during build*/
+	FILE *input = (FILE) *filename;	/*Grabbing data from the orders file*/	
+	char buffer[300];	/*buffer to hold each line*/
+	int id, cost; /*data fields for enqueue function*/
+	char *token, *title, *category;	/*data fields for enqueue + temporary token*/
+
+	/*Grab one line at a time*/
+	while(fgets(buffer, sizeof(buffer), file) != NULL){
+		token = strtok(buffer, "|"); /*Temporarily store the title*/
+		title = malloc(sizeof(token));	/*Malloc space for a title variable*/
+		strcpy(title, token);	/*copy info from token to title*/
+		cost = atoi(strtok(buffer, "|");	/*Convert to int and store in cost*/
+		id = atoi(strtok(buffer, "|"));		/*Conver to int and store in id*/
+		token = strtok(buffer, "|"));	/*Temp store in token*/
+		category = malloc(sizeof(token));	/*Malloc space for category*/
+		strcpy(category, token);	/*copy info from token to category*/
+		enqueue(title, cost, id, category, sharedQ);	/*Enqueue info to global queue*/
+	}	
+	pthread_mutex_unlock(&mutex); /*Unlock the function*/
+	return NULL;
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 4) { /*checks for proper user input*/
         printf("Usage: ./order <database file> <book orders file> <categories file>\nAborting\n");
@@ -124,4 +151,18 @@ int main(int argc, char *argv[]) {
     pthread_t consumers[num_threads]; /*holds the threads*/
 
     /*Do thread stuff here*/
+	
+	int nt; /*Number thread we are currently at*/
+	pthread_t producer; /*This is the thread that will produce the queue*/
+	pthread_mutex_init(&mutex, NULL); /*Initialize the mutex*/
+	Pthread_create(&producer, NULL, producerFunc, FILE *file); /*Run the producer thread the generate the queue*/
+	while(!isEmpty(q)){	/*While the queue has stuff in it*/
+		for(nt = 0; nt < num_threads; nt++){ /*Go through all the consumer threads*/
+			Pthread_create(&(consumers[nt]), NULL, consumFunc, categories[nt]) /*Run each consumer thread*/
+		}
+	}
+	for(nt = 0; nt < num_threads; nt++){ /*Terminate all the threads when you are done with them*/
+		pthread_join(consumers[nt], NULL);
+	}
+	pthread_mutex_destroy(&mutex); /*Destroy the mutex*/
 }
