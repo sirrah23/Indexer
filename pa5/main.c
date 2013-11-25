@@ -82,36 +82,36 @@ int readDatabaseFile(FILE *file, DatabasePtr database) {
 
 /*Builds up the initial queue */
 
-void producerFunc(void *filename)
+void producerFunc(void *filename){
 	pthread_mutex_lock(&mutex);	/*Lock this so queue isn't messed with during build*/
-	FILE *input = (FILE) *filename;	/*Grabbing data from the orders file*/	
+	FILE *input = (FILE *) filename;	/*Grabbing data from the orders file*/	
 	char buffer[300];	/*buffer to hold each line*/
 	int id, cost; /*data fields for enqueue function*/
 	char *token, *title, *category;	/*data fields for enqueue + temporary token*/
 
 	/*Grab one line at a time*/
-	while(fgets(buffer, sizeof(buffer), file) != NULL){
+	while(fgets(buffer, sizeof(buffer), input) != NULL){
 		token = strtok(buffer, "|"); /*Temporarily store the title*/
 		title = malloc(sizeof(token));	/*Malloc space for a title variable*/
 		strcpy(title, token);	/*copy info from token to title*/
-		cost = atof(strtok(buffer, "|");	/*Convert to float and store in cost*/
+		cost = atof(strtok(buffer, "|"));	/*Convert to float and store in cost*/
 		id = atoi(strtok(buffer, "|"));		/*Conver to int and store in id*/
-		token = strtok(buffer, "|"));	/*Temp store in token*/
+		token = strtok(buffer, "|");	/*Temp store in token*/
 		category = malloc(sizeof(token));	/*Malloc space for category*/
 		strcpy(category, token);	/*copy info from token to category*/
 		enqueue(title, cost, id, category, sharedQ);	/*Enqueue info to global queue*/
 	}	
 	pthread_mutex_unlock(&mutex); /*Unlock the function*/
-	return NULL;
+	return;
 }
 
 void consumFunc(void *categorystring){
 	pthread_mutex_lock(&mutex);
-	char *category = (char) *categorystring;
+	char *category = (char *)categorystring;
 	float credits;
 	int boolz;
 	NodePtr headofqueue = peek(sharedQ);
-	if(strcmp(headofqueue->list->category, category) == 0){
+	if(strcmp(headofqueue->category, category) == 0){
 		headofqueue = dequeue(sharedQ);
 		credits = database->table[headofqueue->id]->money;
 		if(credits <= headofqueue->cost){
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
 
     int num_threads = getSize(categories_file);
     char *categories[num_threads];
-    categories = getCategories(categories_file, categories);
+    getCategories(categories_file, categories);
     fclose(categories_file);
 
     pthread_t consumers[num_threads]; /*holds the threads*/
@@ -174,17 +174,19 @@ int main(int argc, char *argv[]) {
     /*Do thread stuff here*/
 	
 	FILE *order_file = fopen(argv[2], "r");
-	int nt, truth; /*Number thread we are currently at*/
+	void *filept = order_file;
+	int nt;/*Number thread we are currently at*/
+	int *truth;
 	pthread_t producer; /*This is the thread that will produce the queue*/
 	pthread_mutex_init(&mutex, NULL); /*Initialize the mutex*/
-	Pthread_create(&producer, NULL, producerFunc, void *order_file); /*Run the producer thread the generate the queue*/
-	while(!isEmpty(q)){	/*While the queue has stuff in it*/
+	pthread_create(&producer, NULL, &producerFunc, filept); /*Run the producer thread the generate the queue*/
+	while(!isEmpty(sharedQ)){	/*While the queue has stuff in it*/
 		for(nt = 0; nt < num_threads; nt++){ /*Go through all the consumer threads*/
-			Pthread_create(&(consumers[nt]), NULL, consumFunc, void *categories[nt]) /*Run each consumer thread*/
-			pthread_join(consumers[nt], truth);
-			if(truth) break;
+			pthread_create(&(consumers[nt]), NULL, &consumFunc,(void *) categories[nt]); /*Run each consumer thread*/
+			pthread_join(consumers[nt], (void *)&truth);
+			if(*truth) break;
 		}
 	}
-	}
 	pthread_mutex_destroy(&mutex); /*Destroy the mutex*/
+	return 1;
 }

@@ -1,6 +1,6 @@
 struct Node{
 	char *title;
-	int cost;
+	float cost;
 	int id;
 	char *category;
 	struct Node* next;
