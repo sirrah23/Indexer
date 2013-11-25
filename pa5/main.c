@@ -173,10 +173,11 @@ int main(int argc, char *argv[]) {
 
     /*Do thread stuff here*/
 	
+	FILE *order_file = fopen(argv[2], "r");
 	int nt, truth; /*Number thread we are currently at*/
 	pthread_t producer; /*This is the thread that will produce the queue*/
 	pthread_mutex_init(&mutex, NULL); /*Initialize the mutex*/
-	Pthread_create(&producer, NULL, producerFunc, void *file); /*Run the producer thread the generate the queue*/
+	Pthread_create(&producer, NULL, producerFunc, void *order_file); /*Run the producer thread the generate the queue*/
 	while(!isEmpty(q)){	/*While the queue has stuff in it*/
 		for(nt = 0; nt < num_threads; nt++){ /*Go through all the consumer threads*/
 			Pthread_create(&(consumers[nt]), NULL, consumFunc, void *categories[nt]) /*Run each consumer thread*/
