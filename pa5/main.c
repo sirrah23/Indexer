@@ -8,6 +8,7 @@
 DatabasePtr database;
 QueuePtr sharedQ;
 pthread_mutex_t mutex;
+float totalrev= 0;
 int procorders = 0;
 
 /*
@@ -132,7 +133,8 @@ void *consumFunc(void *categorystring){
 				temp = dequeue(sharedQ);
 				if(database->table[temp->id-1]->money > temp->cost){
 					database->table[temp->id-1]->money -= temp->cost;
-					printf("Order Confirmed! Book Title: %s, Price: %.2f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, database->table[temp->id-1]->name	,database->table[temp->id-1]->address, database->table[temp->id-1]->state, database->table[temp->id-1]->zipcode); 
+					printf("Order Confirmed! Book Title: %s, Price: %.2f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, database->table[temp->id-1]->name	,database->table[temp->id-1]->address, database->table[temp->id-1]->state, database->table[temp->id-1]->zipcode);
+					totalrev += temp->cost;
 					pthread_mutex_unlock(&mutex);
 				}
 				else{
