@@ -89,24 +89,21 @@ void *producerFunc(void *filename){
 	char buffer[1000];	/*buffer to hold each line*/
 	int id;/*data fields for enqueue function*/
 	float cost;
-	char *token, *title, *category;	/*data fields for enqueue + temporary token*/
+	char *token, *title = NULL, *category = NULL;	/*data fields for enqueue + temporary token*/
 
 	/*Grab one line at a time*/
 	while(fgets(buffer, sizeof(buffer), input) != NULL){
 		token = strtok(buffer, "|"); /*Temporarily store the title*/
-		title = malloc(sizeof(token));	/*Malloc space for a title variable*/
-		strcpy(title, token);	/*copy info from token to title*/
+		title = copy(title, token, invalid_chars);
 		token = strtok(NULL, "|");
 		cost = atof(token);	/*Convert to float and store in cost*/
 		token = strtok(NULL, "|");
 		id = atoi(token);		/*Conver to int and store in id*/
-		token = strtok(NULL, " |\r");	/*Temp store in token*/
-		category = malloc(sizeof(token));	/*Malloc space for category*/
-		strcpy(category, token);	/*copy info from token to category*/
+		token = strtok(NULL, " |");	/*Temp store in token*/
+		category = copy(category, token, invalid_chars);
 		pthread_mutex_lock(&mutex);	/*Lock this so queue isn't messed with during build*/
 		enqueue(title, cost, id, category, sharedQ);	/*Enqueue info to global queue*/
 		pthread_mutex_unlock(&mutex); /*Unlock the function*/
-
 	}
 		fclose(input);
 		procorders = 1;
@@ -133,20 +130,20 @@ void *consumFunc(void *categorystring){
 			}
 			else{
 				temp = dequeue(sharedQ);
-				if(database->table[temp->id]->money > temp->cost){
-					database->table[temp->id]->money -= temp->cost;
-					printf("Order Confirmed! Book Title: %s, Price: %f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, database->table[temp->id]->name						,database->table[temp->id]->address, database->table[temp->id]->state, database->table[temp->id]->zipcode); 
+				if(database->table[temp->id-1]->money > temp->cost){
+					database->table[temp->id-1]->money -= temp->cost;
+					printf("Order Confirmed! Book Title: %s, Price: %.2f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, database->table[temp->id-1]->name	,database->table[temp->id-1]->address, database->table[temp->id-1]->state, database->table[temp->id-1]->zipcode); 
 					pthread_mutex_unlock(&mutex);
 				}
 				else{
-					printf("Order Rejected! Customer: %s, Book Title: %s, Price: %f, Remaining Balance: %f\n", database->table[temp->id]->name, 
-							temp->title, temp->cost, database->table[temp->id]->money);
+					printf("Order Rejected! Customer: %s, Book Title: %s, Price: %.2f, Remaining Balance: %.2f\n", database->table[temp->id-1]->name, temp->title, temp->cost, database->table[temp->id-1]->money);
 					pthread_mutex_unlock(&mutex);
 				}
 				
 			}
 		}
 	}
+    pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[]) {
@@ -190,18 +187,29 @@ int main(int argc, char *argv[]) {
     fclose(categories_file);
 
     pthread_t consumers[num_threads]; /*holds the threads*/
-
-    /*Do thread stuff here*/
-	
 	int nt;/*Number thread we are currently at*/
 	FILE *order_file = fopen(argv[2], "r");
+    if(order_file == NULL) { /*checks if file exists*/
+        printf("Failed to read file %s or this file does not exist\nAborting\n", argv[2]);
+        return 1;
+    }
 	sharedQ = createQueue();
+    pthread_attr_t attr;
 	pthread_t producer; /*This is the thread that will produce the queue*/
 	pthread_mutex_init(&mutex, NULL); /*Initialize the mutex*/
-	pthread_create(&producer, NULL, producerFunc, (void *)order_file); /*Run the producer thread the generate the queue*/
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    void *status;
+	pthread_create(&producer, &attr, producerFunc, (void *)order_file); /*Run the producer thread the generate the queue*/
 	for(nt = 0; nt < num_threads; nt++){ /*Go through all the consumer threads*/
-		pthread_create(&(consumers[nt]), NULL, consumFunc,(void *) categories[nt]); /*Run each consumer thread*/
+		pthread_create(&(consumers[nt]), &attr, consumFunc,(void *) categories[nt]); /*Run each consumer thread*/
 	}
+    pthread_attr_destroy(&attr);
+
+    pthread_join(producer, &status);
+    for(nt = 0; nt < num_threads; nt++){
+        pthread_join(consumers[nt], &status);
+    }
 	
 	pthread_mutex_destroy(&mutex); /*Destroy the mutex*/
 	pthread_exit(NULL);	

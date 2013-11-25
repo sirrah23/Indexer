@@ -128,7 +128,6 @@ int insert(DatabasePtr database, char *information) {
     char *name = NULL, *address = NULL; 
     char *state = NULL, *zipcode = NULL;
     char *token;
-    static char *invalid_chars = "\b\f\n\r\t\v\"\'\\";
 
     /*Stores name in the customer node*/
     if((token = strtok(information, "|")) != NULL)
@@ -156,7 +155,9 @@ int insert(DatabasePtr database, char *information) {
     /*Stores customer into the database*/
     if(customer->id != -1)
         database->table[id-1] = customer;
-    else
+    else {
         destroyCustomer(customer);
+        return 0;
+    }
     return 1;/*Successfully stored a customer into the database*/
 }

@@ -13,20 +13,16 @@ void enqueue(char *title, float cost, int id, char *category, QueuePtr q){
 	if(q->head == NULL && q->tail == NULL && q->list == NULL){
 		q->list = malloc(sizeof(struct Node));
 		q->head = q->list;
-		q->list->title = malloc(sizeof(title));
-		strcpy(q->list->title, title);
-		q->list->category = malloc(sizeof(category));
-		strcpy(q->list->category, category);
+		q->list->title = title;
+		q->list->category = category;
 		q->list->id = id;
 		q->list->cost = cost;
 		q->list->next = malloc(sizeof(struct Node));
 		q->tail = q->list->next;
 		return;
 	}
-	q->tail->title = malloc(sizeof(title));
-	strcpy(q->tail->title, title);
-	q->tail->category = malloc(sizeof(category));
-	strcpy(q->tail->category, category);
+	q->tail->title = title;
+	q->tail->category = category;
 	q->tail->id = id;
 	q->tail->cost = cost;
 	q->tail->next = malloc(sizeof(struct Node));
@@ -74,6 +70,3 @@ int isEmpty(QueuePtr q){
 		return 1;
 	return 0;	
 }
-
-
-
