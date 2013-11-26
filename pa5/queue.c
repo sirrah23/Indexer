@@ -50,8 +50,6 @@ void clearQueue(QueuePtr q){
 	temp = temp2 = q->list;
 	while(temp2 != NULL){
 		temp2 = temp->next;
-		free(temp->title);
-		free(temp->category);
 		free(temp);
 		temp = temp2;
 	}

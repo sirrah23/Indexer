@@ -5,6 +5,25 @@
 static char *invalid_chars = "\b\f\n\r\t\v\"\'\\";
 
 /*
+ * A node that holds successful order information.
+ */
+struct SuccOrder {
+    char *title;
+    float price;
+    float balance;
+};
+typedef struct SuccOrder* SuccOrderPtr;
+
+/*
+ * A node that holds unsuccessful order information.
+ */
+struct UnsuccOrder {
+    char *title;
+    float price;
+};
+typedef struct UnsuccOrder* UnsuccOrderPtr;
+
+/*
  * A node that holds customer information.
  */
 struct Customer {
@@ -14,6 +33,10 @@ struct Customer {
     char *address;
     char *state;
     char *zipcode;
+    SuccOrderPtr *succ_orders;
+    int succ_size;
+    UnsuccOrderPtr *unsucc_orders;
+    int unsucc_size;
 };
 typedef struct Customer* CustomerPtr;
 
@@ -25,6 +48,28 @@ struct Database {
     int table_size;
 };
 typedef struct Database* DatabasePtr;
+
+/*
+ * Creates a new successful order.
+ * Returns NULL on failure.
+ */
+SuccOrderPtr makeSuccOrder();
+
+/*
+ * Frees any memory allocated by a SuccOrder struct.
+ */
+void destroySuccOrder(SuccOrderPtr orders);
+
+/*
+ * Creates a new unsuccessful order.
+ * Returns NULL on failure.
+ */
+UnsuccOrderPtr makeUnsuccOrder();
+
+/*
+ * Frees any memory allocated by a UnsuccOrder struct.
+ */
+void destroyUnsuccOrder(UnsuccOrderPtr orders);
 
 /*
  * Creates a new Customer.

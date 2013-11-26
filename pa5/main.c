@@ -8,7 +8,7 @@
 DatabasePtr database;
 QueuePtr sharedQ;
 pthread_mutex_t mutex;
-float totalrev= 0;
+float totalrev = 0;
 int procorders = 0;
 
 /*
@@ -39,6 +39,15 @@ void getCategories(FILE *file, char **array) {
         array[i] = string; /*stores string in the array*/
         i++;
     }
+}
+
+/*
+ * Frees memory allocated by the Categories array.
+ */
+void destroyCategories(char **array, int size) {
+    int i;
+    for(i = 0; i < size; i++)
+        free(array[i]);
 }
 
 /*
@@ -81,6 +90,46 @@ int readDatabaseFile(FILE *file, DatabasePtr database) {
   }
 
   return 1; /*On success*/
+}
+
+void printFinal() {
+    FILE *save = fopen("finalreport.txt", "w");
+    int i;
+    for(i = 0; i < database->table_size; i++) {
+        CustomerPtr customer = database->table[i];
+        printf("=== BEGIN CUSTOMER INFO ===\n");
+        fprintf(save, "%s\n", "=== BEGIN CUSTOMER INFO ===");
+        printf("### BALANCE ###\n");
+        fprintf(save, "%s\n", "### BALANCE ###");
+        printf("Customer name: %s\n", customer->name);
+        fprintf(save, "%s %s\n", "Customer name:", customer->name);
+        printf("Customer ID number: %d\n", customer->id);
+        fprintf(save, "%s %d\n", "Customer ID number:", customer->id);
+        printf("Remaining balance after purchases: %.2f\n", customer->money);
+        fprintf(save, "%s %.2f\n", "Remaining balance after purchases:", customer->money);
+        printf("### SUCCESSFUL ORDERS ###\n");
+        fprintf(save, "%s\n", "### SUCCESSFUL ORDERS ###");
+        int y;
+        for(y = 0; y < customer->succ_size; y++) {
+            SuccOrderPtr order = customer->succ_orders[y];
+            printf("\"%s\"| %.2f| %.2f\n", order->title, order->price, order->balance);
+            fprintf(save, "\"%s\"| %.2f| %.2f\n", order->title, order->price, order->balance);
+        }
+        printf("### REJECTED ORDERS ###\n");
+        fprintf(save, "%s\n", "### REJECTED ORDERS ###");
+        for(y = 0; y < customer->unsucc_size; y++) {
+            UnsuccOrderPtr order = customer->unsucc_orders[y];
+            printf("\"%s\"| %.2f\n", order->title, order->price);
+            fprintf(save, "\"%s\"| %.2f\n", order->title, order->price);
+        }
+        printf("=== END CUSTOMER INFO ===\n");
+        fprintf(save, "%s\n", "=== END CUSTOMER INFO ===");
+        if(i < database->table_size-1) {
+            printf("\n");
+            fprintf(save, "\n");
+        }
+    }
+    fclose(save);
 }
 
 /*Builds up the initial queue */
@@ -131,17 +180,40 @@ void *consumFunc(void *categorystring){
 			}
 			else{
 				temp = dequeue(sharedQ);
-				if(database->table[temp->id-1]->money > temp->cost){
-					database->table[temp->id-1]->money -= temp->cost;
-					printf("Order Confirmed! Book Title: %s, Price: %.2f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, database->table[temp->id-1]->name	,database->table[temp->id-1]->address, database->table[temp->id-1]->state, database->table[temp->id-1]->zipcode);
+                CustomerPtr customer = get(database, temp->id);
+				if(customer->money >= temp->cost){
+					customer->money -= temp->cost;
+					printf("Order Confirmed! Book Title: %s, Price: %.2f, Name: %s, Address: %s %s %s\n", temp->title, temp->cost, customer->name, customer->address, customer->state, customer->zipcode);
 					totalrev += temp->cost;
+                    if(customer->succ_size == 0)
+                        customer->succ_orders = malloc(sizeof(SuccOrderPtr));
+                    else
+                        customer->succ_orders = realloc(customer->succ_orders, sizeof(SuccOrderPtr) * (customer->succ_size+1));
+                    SuccOrderPtr orders = makeSuccOrder();
+                    if(orders != NULL) {
+                        orders->title = temp->title;
+                        orders->price = temp->cost;
+                        orders->balance = customer->money;
+                    }
+                    customer->succ_orders[customer->succ_size] = orders;
+                    customer->succ_size++;
 					pthread_mutex_unlock(&mutex);
 				}
 				else{
-					printf("Order Rejected! Customer: %s, Book Title: %s, Price: %.2f, Remaining Balance: %.2f\n", database->table[temp->id-1]->name, temp->title, temp->cost, database->table[temp->id-1]->money);
+					printf("Order Rejected! Customer: %s, Book Title: %s, Price: %.2f, Remaining Balance: %.2f\n", customer->name, temp->title, temp->cost, customer->money);
+                    if(customer->unsucc_size == 0)
+                        customer->unsucc_orders = malloc(sizeof(UnsuccOrderPtr));
+                    else
+                        customer->succ_orders = realloc(customer->unsucc_orders, sizeof(UnsuccOrderPtr) * (customer->unsucc_size+1));
+                    UnsuccOrderPtr orders = makeUnsuccOrder();
+                    if(orders != NULL) {
+                        orders->title = temp->title;
+                        orders->price = temp->cost;
+                    }
+                    customer->unsucc_orders[customer->unsucc_size] = orders;
+                    customer->unsucc_size++;
 					pthread_mutex_unlock(&mutex);
 				}
-				
 			}
 		}
 	}
@@ -212,8 +284,14 @@ int main(int argc, char *argv[]) {
     for(nt = 0; nt < num_threads; nt++){
         pthread_join(consumers[nt], &status);
     }
-	
 	pthread_mutex_destroy(&mutex); /*Destroy the mutex*/
-    printf("Total Revenue is $%f\n", totalrev);
+    
+    printf("\n****** Total Revenue is $%.2f ******\n\n", totalrev);
+    printFinal();
+
+    destroyDatabase(database);
+    destroyCategories(categories, num_threads);
+    clearQueue(sharedQ); 
+
 	pthread_exit(NULL);	
 }

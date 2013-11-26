@@ -1,6 +1,51 @@
 #include "database.h"
 
 /*
+ * Creates a new successful order.
+ * Returns NULL on failure.
+ */
+SuccOrderPtr makeSuccOrder() {
+    SuccOrderPtr orders = malloc(sizeof(struct SuccOrder));
+    if(orders != NULL) {
+        orders->title = NULL;
+        orders->price = 0;
+        orders->balance = 0;
+    }
+    return orders;
+}
+
+/*
+ * Frees any memory allocated by a SuccOrder struct.
+ */
+void destroySuccOrder(SuccOrderPtr orders) {
+    if(orders->title != NULL)
+        free(orders->title);
+    free(orders);
+}
+
+/*
+ * Creates a new unsuccessful order.
+ * Returns NULL on failure.
+ */
+UnsuccOrderPtr makeUnsuccOrder() {
+    UnsuccOrderPtr orders = malloc(sizeof(struct UnsuccOrder));
+    if(orders != NULL) {
+        orders->title = NULL;
+        orders->price = 0;
+    }
+    return orders;
+}
+
+/*
+ * Frees any memory allocated by a UnsuccOrder struct.
+ */
+void destroyUnsuccOrder(UnsuccOrderPtr orders) {
+    if(orders->title != NULL)
+        free(orders->title);
+    free(orders);
+}
+
+/*
  * Creates a new Customer.
  * Returns NULL if function fails.
  */
@@ -13,6 +58,10 @@ CustomerPtr makeCustomer() {
         customer->address = NULL;
         customer->state = NULL;
         customer->zipcode = NULL;
+        customer->succ_orders = NULL;
+        customer->succ_size = 0;
+        customer->unsucc_orders = NULL;
+        customer->unsucc_size = 0;
     }
     return customer;
 }
@@ -29,6 +78,16 @@ void destroyCustomer(CustomerPtr customer) {
         free(customer->state);
     if(customer->zipcode != NULL)
         free(customer->zipcode);
+    if(customer->succ_orders != NULL) {
+        int i;
+        for(i = 0; i < customer->succ_size; i++)
+            destroySuccOrder(customer->succ_orders[i]);
+    }
+    if(customer->unsucc_orders != NULL) {
+        int i;
+        for(i = 0; i < customer->unsucc_size; i++)
+            destroyUnsuccOrder(customer->unsucc_orders[i]);
+    }
     free(customer);
 }
 
