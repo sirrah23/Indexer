@@ -204,7 +204,7 @@ void *consumFunc(void *categorystring){
                     if(customer->unsucc_size == 0)
                         customer->unsucc_orders = malloc(sizeof(UnsuccOrderPtr));
                     else
-                        customer->succ_orders = realloc(customer->unsucc_orders, sizeof(UnsuccOrderPtr) * (customer->unsucc_size+1));
+                        customer->unsucc_orders = realloc(customer->unsucc_orders, sizeof(UnsuccOrderPtr) * (customer->unsucc_size+1));
                     UnsuccOrderPtr orders = makeUnsuccOrder();
                     if(orders != NULL) {
                         orders->title = temp->title;
