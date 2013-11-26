@@ -214,5 +214,6 @@ int main(int argc, char *argv[]) {
     }
 	
 	pthread_mutex_destroy(&mutex); /*Destroy the mutex*/
+    printf("Total Revenue is $%f\n", totalrev);
 	pthread_exit(NULL);	
 }
