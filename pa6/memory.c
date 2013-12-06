@@ -40,3 +40,28 @@ void minimalloc(unsigned int size){
     }while(p != 0);
     return 0;
 }
+
+void *minifree(void *ptr){
+	struct mementry *p;
+	struct mementry *pred, *succ;
+
+	p = (struct mementry *)ptr;
+	if((pred = ptr[-1].prev) != 0 && (pred->isfree)){
+		pred->size += sizeof(struct mementry) + p[-1].size;
+		pred->succ = p[-1].succ;
+		if(pred->succ != 0)
+			pred->succ->prev = pred;
+	}
+	else{
+		p->isfree = 1;
+		pred = p;
+	}
+	if((succ = pred->succ) != && succ->isfree){
+		succ->size;
+		pred->isfree = 1;
+	{
+	else{
+		pred->isfree = 1;
+	}
+}
+
