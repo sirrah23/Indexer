@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "malloc2.h"
-#define MEMSIZE BLOCKSIZE/sizeof(struct MemEntry)
 
 static char big_block[BLOCKSIZE];
 static char* mem_val[MEMSIZE]; //stores memory addresses of allocated memory
