@@ -1,10 +1,11 @@
-#include "my_malloc.h"
+#include <stdio.h>
+#include "malloc2.h"
 
 
 static char big_block[BLOCKSIZE];
 
 // return a pointer to the memory buffer requested
-void* my_malloc(unsigned int size)
+void* my_malloc(unsigned int size, char *file, int line)
 {
 	static int 		initialized = 0;
 	static struct MemEntry *root;
@@ -56,6 +57,7 @@ void* my_malloc(unsigned int size)
 			succ->size = p->size - sizeof(struct MemEntry) - size;
 			p->size = size;
 			p->isfree = 0;
+            succ->isfree = 1;
 			return (char*)p + sizeof(struct MemEntry);
 		}
 	} while(p != 0);
@@ -65,13 +67,24 @@ void* my_malloc(unsigned int size)
 
 
 // free a memory buffer pointed to by p
-void my_free(void *p)
+void my_free(void *p, char *file, int line)
 {
-	struct MemEntry *ptr;
+    if(p < (void*)big_block || p > (void*)big_block+BLOCKSIZE) {
+        fprintf(stderr, "Freeing memory not previously allocated. File: %s Line: %d\n", file, line);
+        return;
+    }
+    
+    struct MemEntry *ptr;
 	struct MemEntry *prev;
 	struct MemEntry *succ;
 	
 	ptr = (struct MemEntry*)((char*)p - sizeof(struct MemEntry));
+    
+    if(ptr->isfree) {
+        fprintf(stderr, "Freeing memory previously freed. File: %s Line: %d\n", file, line);
+        return;
+    }
+
 	if((prev = ptr->prev) != 0 && prev->isfree)
 	{
 		// the previous chunk is free, so
