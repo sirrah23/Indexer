@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include "malloc2.h"
-
+#define MEMSIZE BLOCKSIZE/sizeof(struct MemEntry)
 
 static char big_block[BLOCKSIZE];
-static char* mem_val[BLOCKSIZE/sizeof(struct MemEntry)];
+static char* mem_val[MEMSIZE]; //stores memory addresses of allocated memory
 
 // return a pointer to the memory buffer requested
 void* my_malloc(unsigned int size, char *file, int line)
 {
-	static int 		initialized = 0;
+	static int initialized = 0;
 	static struct MemEntry *root;
 	struct MemEntry *p;
 	struct MemEntry *succ;
 	char * result;
-	int i = 0;
+	int i = 0; //used for while loop to store an allocated memory address into mem_val
 	
-	if(!initialized)	// 1st time called
+	if(!initialized) // 1st time called
 	{
 		// create a root chunk at the beginning of the memory block
 		root = (struct MemEntry*)big_block;
@@ -43,7 +43,8 @@ void* my_malloc(unsigned int size, char *file, int line)
 			// but there's not enough memory to hold the HEADER of the next chunk
 			// don't create any more chunks after this one
 			p->isfree = 0;
-			result = (char*)p + sizeof(struct MemEntry); 
+			result = (char*)p + sizeof(struct MemEntry);
+            //store allocated memory address into mem_val
 			while(1){
 				if(mem_val[i] == 0){
 					mem_val[i] = result;
@@ -70,6 +71,7 @@ void* my_malloc(unsigned int size, char *file, int line)
 			p->isfree = 0;
             succ->isfree = 1;
 			result = (char *)p + sizeof(struct MemEntry);
+            //store allocated memory address into mem_val
 			while(1){
 				if(mem_val[i] == 0){
 					mem_val[i] = result;
@@ -84,35 +86,24 @@ void* my_malloc(unsigned int size, char *file, int line)
 	return 0;
 }
 
-
 // free a memory buffer pointed to by p
 void my_free(void *p, char *file, int line)
 {	
-	int i = 0;
-	while(1){
-		if(mem_val[i] == 0 || i > (BLOCKSIZE / sizeof(struct MemEntry))){
-			fprintf(stderr, "Attempting to free something that wasn't allocated. File: %s Line: %d\n", file, line);
-			return;
-		}
+	int i;
+    //checks if memory address p was allocated
+	for(i = 0; i < MEMSIZE; i++){
 		if(mem_val[i] == (char *)p)
-			break;
-		i++;
+            break;
 	}
-
-    if(p < (void*)big_block || p > (void*)big_block+BLOCKSIZE) {
-        fprintf(stderr, "Freeing memory not previously allocated. File: %s Line: %d\n", file, line);
-        return;
-    }
     
     struct MemEntry *ptr;
 	struct MemEntry *prev;
 	struct MemEntry *succ;
-	i = 0;
 	
 	ptr = (struct MemEntry*)((char*)p - sizeof(struct MemEntry));
-    
-    if(ptr->isfree) {
-        fprintf(stderr, "Freeing memory previously freed. File: %s Line: %d\n", file, line);
+    //checks if the memory address being freed is in big_block or if it wasn't found in mem_val
+    if(ptr < (struct MemEntry*)big_block || ptr > (struct MemEntry*)big_block+BLOCKSIZE || i == MEMSIZE) {
+        fprintf(stderr, "Attempting to free something that wasn't allocated or was previously freed. File: %s Line: %d\n", file, line);
         return;
     }
 
@@ -145,6 +136,9 @@ void my_free(void *p, char *file, int line)
 			succ->succ->prev=prev;
 		//end add
 	}
+
+    i = 0;
+    //delete the freed memory address in mem_val
 	while(1){
 		if(mem_val[i] == (char *)p){
 			mem_val[i] = 0;
