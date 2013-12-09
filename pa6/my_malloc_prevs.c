@@ -4,17 +4,6 @@
 static char big_block[BLOCKSIZE];
 static char* mem_val[MEMSIZE]; //stores memory addresses of allocated memory
 
-//delete the freed memory address in mem_val
-void delete(char *p) {
-    int i;
-	for(i = 0; i < MEMSIZE; i++){
-		if(mem_val[i] == p) {
-			mem_val[i] = 0;
-		    break;
-        }
-	}
-}
-
 // return a pointer to the memory buffer requested
 void* my_malloc(unsigned int size, char *file, int line)
 {
@@ -114,12 +103,7 @@ void my_free(void *p, char *file, int line)
 	ptr = (struct MemEntry*)((char*)p - sizeof(struct MemEntry));
     //checks if the memory address being freed is in big_block or if it wasn't found in mem_val
     if(ptr < (struct MemEntry*)big_block || ptr > (struct MemEntry*)big_block+BLOCKSIZE || i == MEMSIZE) {
-        fprintf(stderr, "%s line: %d - Attempting to free something that wasn't allocated.\n", file, line);
-        return;
-    }
-
-    if(ptr->isfree) {
-        fprintf(stderr, "%s line: %d - Attempting to free something that was previously freed.\n", file, line);
+        fprintf(stderr, "%s line: %d - Attempting to free something that wasn't allocated or was previously freed.\n", file, line);
         return;
     }
 
@@ -133,7 +117,6 @@ void my_free(void *p, char *file, int line)
 		prev->succ = ptr->succ;
 		if(ptr->succ != 0)
 			ptr->succ->prev = prev;
-        delete((char*)ptr + sizeof(struct MemEntry));
 		//end add
 	}
 	else
@@ -151,7 +134,16 @@ void my_free(void *p, char *file, int line)
 		prev->succ = succ->succ;
 		if(succ->succ != 0)
 			succ->succ->prev=prev;
-        delete((char*)succ + sizeof(struct MemEntry));
 		//end add
+	}
+
+    i = 0;
+    //delete freed memory address in mem_val
+    while(1){
+		if(mem_val[i] == (char*)p){
+			mem_val[i] = 0;
+			break;
+		}
+		i++;	
 	}
 }
