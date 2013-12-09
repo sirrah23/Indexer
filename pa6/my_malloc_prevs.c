@@ -94,6 +94,8 @@ void my_free(void *p, char *file, int line)
 			fprintf(stderr, "Attempting to free something that wasn't allocated. File: %s Line: %d\n", file, line);
 			return;
 		}
+		if(mem_val[i] == (char *)p)
+			break;
 		i++;
 	}
 

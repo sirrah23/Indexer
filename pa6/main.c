@@ -5,10 +5,6 @@
 
 int main() {
     char *test;
-	test = malloc(100);
-    free(test);
-	printf("success\n");
-	test = malloc(1000);
-	free(test+2);
+	test = malloc(10000);
     return 0;
 }
