@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "malloc2.h"
 
 static char big_block[BLOCKSIZE];

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #define BLOCKSIZE 5000
 #define MEMSIZE BLOCKSIZE/sizeof(struct MemEntry)
 #define malloc(x) my_malloc(x, __FILE__, __LINE__)
