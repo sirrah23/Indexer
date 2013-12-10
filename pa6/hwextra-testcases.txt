@@ -1,0 +1,91 @@
+test 1
+--------
+input:
+test = malloc(300)
+test1 = malloc(4600)
+free(test)
+free(test1)
+
+output:
+
+
+test 2
+--------
+input:
+free(test)
+test1 = malloc(5005)
+free(test1)
+
+output:
+main.c line: 6 - Attempting to free something that wasn't allocated or was previously freed.
+main.c line: 7 - Failed, dynamic memory is full, try freeing.
+main.c line: 8 - Attempting to free something that wasn't allocated or was previously freed.
+
+test 3
+----------
+input:
+test = malloc(300);
+test2 = malloc(1000);
+test3 = malloc(1000);
+free(test2 + 5);
+free(test);
+free(test);
+free(test2);
+free(test3);
+
+output:
+main.c line: 9 - Attempting to free something that wasn't allocated or was previously freed.
+main.c line: 11 - Attempting to free something that wasn't allocated or was previously freed.
+
+test 4
+---------
+input:
+test = malloc(200);
+test2 = malloc(400);
+test3 = malloc(600);
+test4 = malloc(800);
+free(test4);
+free(test3);
+free(test2);
+free(test);
+test = malloc(200);
+test2 = malloc(400);
+test3 = malloc(600);
+test4 = malloc(800);
+free(test4);
+free(test3);
+free(test2);
+free(test);
+test = malloc(200);
+test2 = malloc(400);
+test3 = malloc(600);
+test4 = malloc(800);
+free(test4);
+free(test3);
+free(test2);
+free(test);
+
+output:
+
+
+test 5
+-------------
+input:
+test = malloc(100);
+free(test);
+test = malloc(100);
+free(test);
+
+output:
+
+
+
+
+
+
+
+
+
+
+
+
