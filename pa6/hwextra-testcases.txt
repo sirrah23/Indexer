@@ -43,7 +43,7 @@ input:
 test7 = malloc(200);
 test8 = malloc(400);
 test9 = malloc(600);
-test19 = malloc(800);
+test10 = malloc(800);
 free(test10);
 free(test9);
 free(test8);
