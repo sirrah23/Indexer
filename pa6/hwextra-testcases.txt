@@ -17,9 +17,9 @@ test1 = malloc(5005)
 free(test1)
 
 output:
-main.c line: 6 - Attempting to free something that wasn't allocated or was previously freed.
-main.c line: 7 - Failed, dynamic memory is full, try freeing.
-main.c line: 8 - Attempting to free something that wasn't allocated or was previously freed.
+main.c line: 16 - Attempting to free something that wasn't allocated or was previously freed.
+main.c line: 17 - Failed, dynamic memory is full, try freeing.
+main.c line: 18 - Attempting to free something that wasn't allocated or was previously freed.
 
 test 3
 ----------
@@ -34,8 +34,8 @@ free(test2);
 free(test3);
 
 output:
-main.c line: 9 - Attempting to free something that wasn't allocated or was previously freed.
-main.c line: 11 - Attempting to free something that wasn't allocated or was previously freed.
+main.c line: 27 - Attempting to free something that wasn't allocated or was previously freed.
+main.c line: 29 - Attempting to free something that wasn't allocated or was previously freed.
 
 test 4
 ---------
@@ -77,15 +77,3 @@ test = malloc(100);
 free(test);
 
 output:
-
-
-
-
-
-
-
-
-
-
-
-
