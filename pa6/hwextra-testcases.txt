@@ -12,9 +12,9 @@ output:
 test 2
 --------
 input:
-free(test)
-test1 = malloc(5005)
-free(test1)
+free(test2)
+test3 = malloc(5005)
+free(test3)
 
 output:
 main.c line: 16 - Attempting to free something that wasn't allocated or was previously freed.
@@ -24,14 +24,14 @@ main.c line: 18 - Attempting to free something that wasn't allocated or was prev
 test 3
 ----------
 input:
-test = malloc(300);
-test2 = malloc(1000);
-test3 = malloc(1000);
-free(test2 + 5);
-free(test);
-free(test);
-free(test2);
-free(test3);
+test4 = malloc(300);
+test5 = malloc(1000);
+test6 = malloc(1000);
+free(test5 + 5);
+free(test4);
+free(test4);
+free(test5);
+free(test6);
 
 output:
 main.c line: 27 - Attempting to free something that wasn't allocated or was previously freed.
@@ -40,30 +40,30 @@ main.c line: 29 - Attempting to free something that wasn't allocated or was prev
 test 4
 ---------
 input:
-test = malloc(200);
-test2 = malloc(400);
-test3 = malloc(600);
-test4 = malloc(800);
-free(test4);
-free(test3);
-free(test2);
-free(test);
-test = malloc(200);
-test2 = malloc(400);
-test3 = malloc(600);
-test4 = malloc(800);
-free(test4);
-free(test3);
-free(test2);
-free(test);
-test = malloc(200);
-test2 = malloc(400);
-test3 = malloc(600);
-test4 = malloc(800);
-free(test4);
-free(test3);
-free(test2);
-free(test);
+test7 = malloc(200);
+test8 = malloc(400);
+test9 = malloc(600);
+test19 = malloc(800);
+free(test10);
+free(test9);
+free(test8);
+free(test7);
+test7 = malloc(200);
+test8 = malloc(400);
+test9 = malloc(600);
+test10 = malloc(800);
+free(test10);
+free(test9);
+free(test8);
+free(test7);
+test7 = malloc(200);
+test8 = malloc(400);
+test9 = malloc(600);
+test10 = malloc(800);
+free(test10);
+free(test9);
+free(test8);
+free(test7);
 
 output:
 
@@ -71,9 +71,9 @@ output:
 test 5
 -------------
 input:
-test = malloc(100);
-free(test);
-test = malloc(100);
-free(test);
+test11 = malloc(100);
+free(test11);
+test11 = malloc(100);
+free(test11);
 
 output:
